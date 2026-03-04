@@ -1,9 +1,7 @@
-import {sha256sum} from './nodeCrypto.js';
-import {versions} from './versions.js';
-import {ipcRenderer} from 'electron';
+import { contextBridge, ipcRenderer } from "electron"
+import type { TicketData } from "../../shared/types.ts"
 
-function send(channel: string, message: string) {
-  return ipcRenderer.invoke(channel, message);
-}
-
-export {sha256sum, versions, send};
+contextBridge.exposeInMainWorld("api", {
+  createTicket: (ticketData: TicketData) =>
+    ipcRenderer.invoke("create-ticket", ticketData)
+})

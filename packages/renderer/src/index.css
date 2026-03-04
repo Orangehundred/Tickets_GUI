@@ -1,68 +1,165 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --system-ui: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #2c2b44;
+    margin: 0;
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
   }
-  a:hover {
-    color: #747bff;
+
+  main {
+    min-height: 100vh;
+    display: grid;
+    grid-column: auto;
+    grid-template-columns: auto 1fr 1fr;
+    grid-template-rows   : auto 1fr auto;
+    grid-template-areas:
+      "hd hd hd" 
+      "lt cn rt" 
+      "ft ft ft";
+      gap: 1rem;
   }
+
+  .ribbon {
+    grid-area: hd;
+    padding: 20px 20px;
+    background: linear-gradient(90deg, #4f46e5, #7c3aed);
+    color: white;
+    font-family: var(--system-ui);
+    font-size: 20px;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  }
+
+  .left {
+    height: auto; /* default — usually best */
+    grid-area: lt;
+    align-items: center;
+    font-family: var(--system-ui);
+
+
+  }
+
+  .center {
+    height: auto; /* default — usually best */
+    grid-area: cn;
+    align-items: center;
+    font-family: var(--system-ui);
+    background: linear-gradient(to bottom, #242424, #2c2b44);
+    border: 1px solid #ccc;
+    box-shadow: 6px 10px 40px 2px black;
+    padding: clamp(1rem, 10vw, 2rem);
+    margin: clamp(1rem, 10vw, 2rem);
+  }
+
+  label {
+    font-style:var(--system-ui);
+    font-size: 18px;
+    font-weight: 600;
+    padding: 10px;
+
+  }
+
+  .box {
+    display: block;
+    min-height: 3vh;
+    min-width: 10vw;
+    padding: 5px;
+    padding-left: 10px;
+
+    max-width: 100%;
+    max-height: 50%;
+  }
+  select {
+    font-size: 16px;
+    margin-top: 8px;
+    margin-bottom: 5px;
+    margin-left: -10px;
+    padding: 5px;
+    font-family: var(--system-ui);
+  }
+
+  textarea {
+    height: 15vh;
+  }
+
+  input,
+  textarea {
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    margin-bottom: 10px;
+    field-sizing: content;
+    inline-size: 80%;
+    border-radius: 3px;
+    font-family: var(--system-ui);
+  }
+
+  input:focus,
+  textarea:focus {
+    outline: 0.2rem solid #61c4eb;
+    box-shadow: 6px 10px 40px 2px black;
+  }
+
   button {
-    background-color: #f9f9f9;
+    background: #4f46e5;
+    border: none;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-weight: 550;
+    font-size: 15px;
+  }
+
+  button:hover {
+    background: linear-gradient(to bottom, #7aafff, #4e95ff);
+  }
+
+  .error-text {
+    color: red
+  }
+
+  .right {
+    height: auto; /* default — usually best */
+    grid-area: rt;
+    align-items: center;
+    font-family: var(--system-ui);
+    background: linear-gradient(to bottom, #242424, #2c2b44);
+    border: 1px solid #ccc;
+    box-shadow: 6px 10px 40px 2px black;
+    padding: clamp(1rem, 10vw, 2rem);
+    margin: clamp(1rem, 10vw, 2rem);
+  }
+  
+  .log-box {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.85rem;
+    color: #d4d4d4;
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+
+    height: 75%;
+    overflow-y: auto;     /* scroll when full */
+    white-space: pre-wrap; /* wraps long lines */
+    word-break: break-all;
+  }
+
+  .footer {
+    font-family: var(--system-ui);
+    text-align: center;
+    color: rgb(180, 180, 180);
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    font-size: 15px;
+
+    grid-area: ft;
   }
 }
