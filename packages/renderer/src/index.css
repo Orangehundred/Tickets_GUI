@@ -24,7 +24,7 @@
       "hd hd hd" 
       "lt cn rt" 
       "ft ft ft";
-      gap: 1rem;
+
   }
 
   .ribbon {
@@ -43,7 +43,12 @@
     grid-area: lt;
     align-items: center;
     font-family: var(--system-ui);
-
+    background: linear-gradient(to bottom, #242424, #2c2b44);
+    border: 1px solid #ccc;
+    box-shadow: 6px 10px 40px 2px black;
+    padding: clamp(0.5rem, 10vw, 1.5rem);
+    margin-top: clamp(0.5rem, 5vw, 1rem);
+    margin-bottom: clamp(1rem, 10vw, 2rem);
 
   }
 
@@ -56,7 +61,9 @@
     border: 1px solid #ccc;
     box-shadow: 6px 10px 40px 2px black;
     padding: clamp(1rem, 10vw, 2rem);
-    margin: clamp(1rem, 10vw, 2rem);
+    margin-top: clamp(0.5rem, 5vw, 1rem);
+    margin-left: clamp(1rem, 10vw, 2rem);
+    margin-bottom: clamp(1rem, 10vw, 2rem);
   }
 
   label {
@@ -134,7 +141,10 @@
     border: 1px solid #ccc;
     box-shadow: 6px 10px 40px 2px black;
     padding: clamp(1rem, 10vw, 2rem);
-    margin: clamp(1rem, 10vw, 2rem);
+    margin-top: clamp(0.5rem, 5vw, 1rem);
+    margin-left: clamp(1rem, 10vw, 2rem);
+    margin-bottom: clamp(1rem, 10vw, 2rem);
+
   }
   
   .log-box {

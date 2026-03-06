@@ -2,7 +2,7 @@ import { useState } from "react"
 
 const CATEGORY_OPTIONS = [
   {
-    label: "Wanted a Password Reset",
+    label: "Staff Password Reset",
     value: "PASSWORD_RESET",
     descriptionTemplate:
       "User requested a password reset. I reset the password and confirmed the user was able to sign in successfully."
@@ -20,10 +20,10 @@ const CATEGORY_OPTIONS = [
       "Student requested a password reset. Password was reset and verified with the user."
   },
   {
-    label: "ESS Password",
-    value: "ESS_PASSWORD",
+    label: "Parent HAC Password Reset",
+    value: "PASSWORD_RESET",
     descriptionTemplate:
-      "User needed assistance with ESS password access. Issue resolved successfully."
+      "Parent called and requested a password reset. I reset their password after confirming their identity with their student's ID number. I then confirmed the user was able to sign in successfully."
   },
   {
     label: "Bitlocker Recovery",
@@ -81,7 +81,6 @@ export default function TicketForm() {
     log.textContent += `[${timestamp}] ${message}\n`;
     log.scrollTop = log.scrollHeight; // auto-scroll to bottom
   }
-// Usage
 // appendLog("Ticket submitted");
 
 const clearLog = async () => {
@@ -96,6 +95,8 @@ const clearLog = async () => {
 
   }
 
+
+  
   // Submit Button
   const [submitted, setSubmitted] = useState(false)
 
@@ -119,6 +120,9 @@ const clearLog = async () => {
       </header>
       <div className="left">
         Left
+
+        //Nav Bar code
+
       </div>
 
       <div className="center">
