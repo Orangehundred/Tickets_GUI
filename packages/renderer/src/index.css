@@ -71,7 +71,15 @@
     font-size: 18px;
     font-weight: 600;
     padding: 10px;
+  }
 
+  nav button {
+    display: flex;
+    flex-direction: column;
+  }
+
+  nav button:hover {
+    color: linear-gradient(to bottom, #7aafff, #4e95ff);
   }
 
   .box {

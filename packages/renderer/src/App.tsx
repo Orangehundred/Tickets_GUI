@@ -22,23 +22,24 @@ const clearLog = async () => {
   }, 1500); // 2000 milliseconds = 2 seconds
 
   }
-
   return (
     <main>
       <header className="ribbon">
         Ticket Automation
       </header>
       <div className="left">
-      <nav>
-        <label onClick={() => setActiveTab(1)}>Ticket Form</label>
-        <label onClick={() => setActiveTab(2)}>Password Generator</label>
-      </nav>
+        <nav>
+          <button onClick={() => setActiveTab(1)} title="Ticket Form"><img src="/assets/ticketform.svg" alt="Ticket Form icon" /></button> 
+          <button onClick={() => setActiveTab(2)} title="Password Generator"><img src="/assets/passwordgen.svg" alt="Password Generator icon" /></button>
+          <button onClick={() => setActiveTab(3)} title="Settings"><img src="/assets/settings.svg" alt="Settings icon" /></button>
+        </nav>
 
       </div>
 
       <div className="center">
         {activeTab === 1 && <TicketForm appendLog={appendLog} />}
-        {activeTab === 2 && <div>PasswordGenerator</div>}
+        {activeTab === 2 && <label>PasswordGenerator</label>}
+        {activeTab === 3 && <label>Settings</label>}
       </div>
       <div className="right">
           {/* Log */}
