@@ -21,7 +21,7 @@ const CATEGORY_OPTIONS = [
   },
   {
     label: "Parent HAC Password Reset",
-    value: "PASSWORD_RESET",
+    value: "PARENT_PASSWORD_RESET",
     descriptionTemplate:
       "Parent called and requested a password reset. I reset their password after confirming their identity with their student's ID number. I then confirmed the user was able to sign in successfully."
   },
@@ -102,7 +102,7 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
 
 
   return (
-    <main>
+    <center>
         {/* Category */}
         <label>
           Category <span className="required">*</span>
@@ -153,9 +153,9 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
             setForm({ ...form, description: e.target.value })
           }
         />
-        <button onClick={handleSubmit}>Create Ticket</button>
+        <button className="submit-btn" onClick={handleSubmit}>Create Ticket</button>
 
-    </main>
+    </center>
 
   )
 }

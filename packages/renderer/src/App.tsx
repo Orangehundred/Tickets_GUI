@@ -47,7 +47,7 @@ const clearLog = async () => {
           <pre className="log-box">
           {logs.join("\n")}
         </pre>
-        <button onClick={clearLog}>Clear Log</button>
+        <button className="submit-btn" onClick={clearLog}>Clear Log</button>
       </div>
 
       <footer className="footer">
