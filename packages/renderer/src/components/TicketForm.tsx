@@ -105,7 +105,7 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
     <center>
         {/* Category */}
         <label>
-          Category <span className="required">*</span>
+          Category <span className="required"></span>
         </label>
         <div className={`box ${isCategoryInvalid ? "error" : ""}`}>
           <select

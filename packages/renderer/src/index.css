@@ -144,7 +144,8 @@
   }
 
   .error-text {
-    color: red
+    color: red;
+    padding-left: 10px;
   }
 
   .right {
