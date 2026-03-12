@@ -1,3 +1,4 @@
+// Electron Main Process
 import {initApp} from '@app/main';
 import {fileURLToPath} from 'node:url';
 
@@ -34,3 +35,11 @@ initApp(
     },
   },
 );
+
+// Connecting playwright test to Electron main process
+import { ipcMain } from "electron"
+import { createTicket } from "../packages/automation/createTicket.ts"
+
+ipcMain.handle("create-ticket", async (_, ticket) => {
+  await createTicket(ticket)
+})

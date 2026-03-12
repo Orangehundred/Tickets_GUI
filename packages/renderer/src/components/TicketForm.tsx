@@ -88,7 +88,7 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
       setSubmitted(true)
   
       if (!form.category) {
-        appendLog("Ticket creation failed: category missing")
+        appendLog("Ticket creation failed: Category missing")
         return
       }
   
