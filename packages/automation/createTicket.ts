@@ -2,7 +2,26 @@ import { firefox } from "playwright"
 import type { TicketData } from "../shared/types.js"
 import * as fs from 'fs';
 
-const AUTH_PATH = "playwright/.auth/google-auth.json" // Auth file for logging in
+// Auth file for logging in
+const AUTH_PATH = "playwright/.auth/google-auth.json" 
+
+//Credentials logic
+import * as dotenv from 'dotenv';
+dotenv.config({ path: './creds.env' });
+
+const username = process.env.USERNAME
+const password = process.env.PASSWORD
+
+console.log('dotenv parsed:', {
+  //USERNAME: process.env.USERNAME,
+ //PASSWORD: process.env.PASSWORD
+});
+console.log(fs.readFileSync('./creds.env', 'utf-8'))
+
+if (!username || !password) {
+  throw new Error("Missing USERNAME or PASSWORD in creds.env")
+}
+//
 
 export async function createTicket(ticket: TicketData) {
   const browser = await firefox.launch({ headless: false })
@@ -28,6 +47,7 @@ export async function createTicket(ticket: TicketData) {
   const locator = page.locator(".user-avatar")
 
   const isLoggedIn = await locator.count() > 0
+  const username = process.env.USERNAME
 
   console.log("isLoggedIn:", isLoggedIn)
   if (!isLoggedIn) {
@@ -35,10 +55,10 @@ export async function createTicket(ticket: TicketData) {
 
     await page.locator('.button2.button2--secondary.button2--block.login-page__login-button').click()
 
-    await page.getByRole('textbox', { name: 'Email or phone' }).fill('EMAIL')
+    await page.getByRole('textbox', { name: 'Email or phone' }).fill(username as string)
     await page.getByRole('button', { name: 'Next' }).click()
 
-    await page.getByRole('textbox', { name: 'Enter your password' }).fill('PASSWORD')
+    await page.getByRole('textbox', { name: 'Enter your password' }).fill(password as string)
     await page.getByRole('button', { name: 'Next' }).click()
 
     // Wait for successful login indicator
