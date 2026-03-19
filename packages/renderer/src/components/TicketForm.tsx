@@ -2,44 +2,45 @@ import { useState } from "react"
 
 const CATEGORY_OPTIONS = [
   {
-    label: "Staff Password Reset",
-    value: "PASSWORD_RESET",
+    request_type: "Issue - User Accounts",
+    request: "Staff Password Reset",
     descriptionTemplate:
       "User requested a password reset. I reset the password and confirmed the user was able to sign in successfully."
   },
   {
-    label: "Password Expired",
-    value: "PASSWORD_EXPIRED",
+    request_type: "Issue - User Accounts",
+    request: "Password Expired",
     descriptionTemplate:
       "User’s password had expired. Password was reset and access was restored."
   },
   {
-    label: "Student Password Reset",
-    value: "STUDENT_PASSWORD_RESET",
+    request_type: "Issue - User Accounts",
+    request: "Student Password Reset",
     descriptionTemplate:
       "Student requested a password reset. Password was reset and verified with the user."
   },
   {
-    label: "Parent HAC Password Reset",
-    value: "PARENT_PASSWORD_RESET",
+    request_type: "Parent HAC Password Reset",
+    request: "Parent HAC Password Reset",
     descriptionTemplate:
       "Parent called and requested a password reset. I reset their password after confirming their identity with their student's ID number. I then confirmed the user was able to sign in successfully."
   },
   {
-    label: "Bitlocker Recovery",
-    value: "BITLOCKER_RECOVERY",
+    request_type: "Issue - Staff Device",
+    request: "Bitlocker Recovery",
     descriptionTemplate:
       "Provided BitLocker recovery key and confirmed the device was unlocked."
   },
   {
-    label: "AV Board Room Check",
-    value: "AV_BOARDROOM_CHECK",
+    request_type: "Issue - Audio Visual Equipment",
+    request: "AV Board Room Check",
     descriptionTemplate:
-      "Performed AV board room check. All equipment tested and functioning properly."
+      "Performed AV board room check. All equipment tested and functioning properly.",
+    building: "Kraft Administration Center"
   },
   {
-    label: "Other",
-    value: "OTHER",
+    request_type: "Other",
+    request: "OTHER",
     descriptionTemplate: ""
   }
 ]
@@ -105,7 +106,7 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
     <center>
         {/* Category */}
         <label>
-          Category <span className="required"></span>
+          Ticket Info <span className="required"></span>
         </label>
         <div className={`box ${isCategoryInvalid ? "error" : ""}`}>
           <select
