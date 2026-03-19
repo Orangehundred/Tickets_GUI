@@ -9,13 +9,14 @@ const AUTH_PATH = "playwright/.auth/google-auth.json"
 import * as dotenv from 'dotenv';
 dotenv.config({ path: './creds.env' });
 
-const username = process.env.USERNAME
-const password = process.env.PASSWORD
+const username = process.env.FMX_USERNAME
+const password = process.env.FMX_PASSWORD
 
 console.log('dotenv parsed:', {
-  //USERNAME: process.env.USERNAME,
- //PASSWORD: process.env.PASSWORD
+  //USERNAME: process.env.FMX_USERNAME,
+  //PASSWORD: process.env.FMX_PASSWORD
 });
+console.log("Using USERNAME:", username)
 console.log(fs.readFileSync('./creds.env', 'utf-8'))
 
 if (!username || !password) {
@@ -47,7 +48,7 @@ export async function createTicket(ticket: TicketData) {
   const locator = page.locator(".user-avatar")
 
   const isLoggedIn = await locator.count() > 0
-  const username = process.env.USERNAME
+  const username = process.env.FMX_USERNAME
 
   console.log("isLoggedIn:", isLoggedIn)
   if (!isLoggedIn) {
