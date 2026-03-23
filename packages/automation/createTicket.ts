@@ -73,12 +73,22 @@ export async function createTicket(ticket: TicketData) {
   }
 
   // --- Continue automation ---
-  await page.fill("#category", ticket.category)
-  await page.fill("#assigned_to", ticket.assignedTo)
-  await page.fill("#short_description", ticket.shortDescription)
-  await page.fill("#description", ticket.description)
+  await page.locator('.selectize-input').first().click();
+  await page.getByRole('option', { name: ticket.request_type }).click();
 
+  await page.getByRole('textbox', { name: 'Request' }).fill(ticket.request_title);
+
+  //await page.getByRole('textbox', { name: 'Description' }).click();
+  await page.getByRole('textbox', { name: 'Description' }).fill(ticket.descriptionTemplate);
+
+  if (ticket.building) {
+  await page.getByRole('combobox', { name: 'Building' }).click()
+  await page.getByRole('option', { name: ticket.building }).click();
+  }
+
+
+  //await page.fill("#assigned_to", ticket.assignedTo)
+  
   //await page.click("button[type=submit]")
-
   //await browser.close()
 }

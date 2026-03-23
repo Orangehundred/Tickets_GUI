@@ -3,44 +3,44 @@ import { useState } from "react"
 const CATEGORY_OPTIONS = [
   {
     request_type: "Issue - User Accounts",
-    request: "Staff Password Reset",
+    request_title: "Staff Password Reset",
     descriptionTemplate:
       "User requested a password reset. I reset the password and confirmed the user was able to sign in successfully."
   },
   {
     request_type: "Issue - User Accounts",
-    request: "Password Expired",
+    request_title: "Password Expired",
     descriptionTemplate:
       "User’s password had expired. Password was reset and access was restored."
   },
   {
     request_type: "Issue - User Accounts",
-    request: "Student Password Reset",
+    request_title: "Student Password Reset",
     descriptionTemplate:
       "Student requested a password reset. Password was reset and verified with the user."
   },
   {
-    request_type: "Parent HAC Password Reset",
-    request: "Parent HAC Password Reset",
+    request_type: "Issue - User Accounts",
+    request_title: "Parent HAC Password Reset",
     descriptionTemplate:
       "Parent called and requested a password reset. I reset their password after confirming their identity with their student's ID number. I then confirmed the user was able to sign in successfully."
   },
   {
     request_type: "Issue - Staff Device",
-    request: "Bitlocker Recovery",
+    request_title: "Bitlocker Recovery",
     descriptionTemplate:
       "Provided BitLocker recovery key and confirmed the device was unlocked."
   },
   {
     request_type: "Issue - Audio Visual Equipment",
-    request: "AV Board Room Check",
+    request_title: "AV Board Room Check",
     descriptionTemplate:
       "Performed AV board room check. All equipment tested and functioning properly.",
     building: "Kraft Administration Center"
   },
   {
     request_type: "Other",
-    request: "OTHER",
+    request_title: "OTHER",
     descriptionTemplate: ""
   }
 ]
@@ -53,10 +53,10 @@ type TicketFormProps = {
 export default function TicketForm({ appendLog }: TicketFormProps) {
 
   const [form, setForm] = useState({
-    category: "",
-    assignedTo: "",
-    shortDescription: "",
-    description: ""
+    request_type: "",
+    request_title: "",
+    descriptionTemplate: "",
+    building: ""
   })
 
   //Provide category dropdown options and autofill Fields on category change
@@ -65,7 +65,7 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
     appendLog(`Category changed to: "${value}"`)
   
   const selected = CATEGORY_OPTIONS.find(
-    option => option.value === value
+    option => option.request_title === value
   )
 
   if (!selected) return
@@ -73,9 +73,10 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
     setForm(prev => ({
       ...prev,
 
-      category: selected.value,
-      description: selected.descriptionTemplate,
-      shortDescription: selected.label
+      request_type: selected.request_type,
+      request_title: selected.request_title,
+      descriptionTemplate: selected.descriptionTemplate,
+
     }))
   }
 
@@ -83,12 +84,12 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
     // Create Ticket Button
     const [submitted, setSubmitted] = useState(false)
 
-    const isCategoryInvalid = submitted && !form.category
+    const isCategoryInvalid = submitted && !form.request_type
   
     const handleSubmit = async () => {
       setSubmitted(true)
   
-      if (!form.category) {
+      if (!form.request_type) {
         appendLog("Ticket creation failed: Category missing")
         return
       }
@@ -110,7 +111,7 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
         </label>
         <div className={`box ${isCategoryInvalid ? "error" : ""}`}>
           <select
-            value={form.category}
+            value={form.request_title}
             onChange={e => 
               {
                 handleCategoryChange(e.target.value);
@@ -124,8 +125,8 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
 
 
             {CATEGORY_OPTIONS.map(option => (
-              <option key={option.value} value={option.value}>
-                {option.label}
+              <option key={option.request_title} value={option.request_title}>
+                {option.request_title}
               </option>
             ))}
             </select>
@@ -139,19 +140,19 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
 
         <input className="box" placeholder="Assigned To" />
         <input className="box" placeholder="Short Description" 
-        value={form.shortDescription}     
+        value={form.request_title}     
         onChange={e => 
         {
-          setForm({ ...form, shortDescription: e.target.value });
+          setForm({ ...form, request_title: e.target.value });
           //appendLog(`Short description changed to: "${e.target.value}"`);
           }
         }
         />
 
-        <textarea className="box" placeholder="Description" 
-          value={form.description}
+        <textarea className="box" placeholder="Description"
+          value={form.descriptionTemplate}
           onChange={e =>
-            setForm({ ...form, description: e.target.value })
+            setForm({ ...form, descriptionTemplate: e.target.value })
           }
         />
         <button className="submit-btn" onClick={handleSubmit}>Create Ticket</button>
