@@ -1,5 +1,6 @@
 .env
 creds.env
+data.json
 playwright/.auth/
 node_modules
 .DS_Store

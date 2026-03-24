@@ -1,47 +1,60 @@
 import { useState } from "react"
 
-const CATEGORY_OPTIONS = [
+
+import dataList from '../../../../data.json';
+
+const assigneeList = dataList.assignees;
+const buildingList = dataList.buildings;
+
+const TYPE_OPTIONS = [
   {
     request_type: "Issue - User Accounts",
     request_title: "Staff Password Reset",
     descriptionTemplate:
-      "User requested a password reset. I reset the password and confirmed the user was able to sign in successfully."
+      "User requested a password reset. I reset the password and confirmed the user was able to sign in successfully.",
+    assigned_to: assigneeList[0],
   },
   {
     request_type: "Issue - User Accounts",
     request_title: "Password Expired",
     descriptionTemplate:
-      "User’s password had expired. Password was reset and access was restored."
+      "User’s password had expired. Password was reset and access was restored.",
+    assigned_to: assigneeList[0],
   },
   {
     request_type: "Issue - User Accounts",
     request_title: "Student Password Reset",
     descriptionTemplate:
-      "Student requested a password reset. Password was reset and verified with the user."
+      "Student requested a password reset. Password was reset and verified with the user.",
+    assigned_to: assigneeList[0],
   },
   {
     request_type: "Issue - User Accounts",
     request_title: "Parent HAC Password Reset",
     descriptionTemplate:
-      "Parent called and requested a password reset. I reset their password after confirming their identity with their student's ID number. I then confirmed the user was able to sign in successfully."
+      "Parent called and requested a password reset. I reset their password after confirming their identity with their student's ID number. I then confirmed the user was able to sign in successfully.",
+    assigned_to: assigneeList[0],
   },
   {
     request_type: "Issue - Staff Device",
     request_title: "Bitlocker Recovery",
     descriptionTemplate:
-      "Provided BitLocker recovery key and confirmed the device was unlocked."
+      "Provided BitLocker recovery key and confirmed the device was unlocked.",
+    assigned_to: assigneeList[0],
   },
   {
     request_type: "Issue - Audio Visual Equipment",
     request_title: "AV Board Room Check",
     descriptionTemplate:
       "Performed AV board room check. All equipment tested and functioning properly.",
-    building: "Kraft Administration Center"
+    assigned_to: assigneeList[0],
+    building: buildingList[0],
   },
   {
     request_type: "Other",
     request_title: "OTHER",
-    descriptionTemplate: ""
+    descriptionTemplate: "",
+    assigned_to: "",
   }
 ]
 
@@ -56,15 +69,16 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
     request_type: "",
     request_title: "",
     descriptionTemplate: "",
+    assigned_to: "",
     building: ""
   })
 
-  //Provide category dropdown options and autofill Fields on category change
-  const handleCategoryChange = (value: string) => {
-    console.log("Category changed to:", value)
-    appendLog(`Category changed to: "${value}"`)
+  //Provide ticket type dropdown options and autofill Fields on ticket type change
+  const handleTypeChange = (value: string) => {
+    console.log("Ticket type changed to:", value)
+    appendLog(`Ticket type changed to: "${value}"`)
   
-  const selected = CATEGORY_OPTIONS.find(
+  const selected = TYPE_OPTIONS.find(
     option => option.request_title === value
   )
 
@@ -76,6 +90,7 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
       request_type: selected.request_type,
       request_title: selected.request_title,
       descriptionTemplate: selected.descriptionTemplate,
+      assigned_to: selected.assigned_to
 
     }))
   }
@@ -84,13 +99,13 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
     // Create Ticket Button
     const [submitted, setSubmitted] = useState(false)
 
-    const isCategoryInvalid = submitted && !form.request_type
+    const isTicketTypeInvalid = submitted && !form.request_type
   
     const handleSubmit = async () => {
       setSubmitted(true)
   
       if (!form.request_type) {
-        appendLog("Ticket creation failed: Category missing")
+        appendLog("Ticket creation failed: Ticket type missing")
         return
       }
   
@@ -105,17 +120,17 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
 
   return (
     <center>
-        {/* Category */}
+        {/* Ticket Info */}
         <label>
           Ticket Info <span className="required"></span>
         </label>
-        <div className={`box ${isCategoryInvalid ? "error" : ""}`}>
+        <div className={`box ${isTicketTypeInvalid ? "error" : ""}`}>
           <select
             value={form.request_title}
             onChange={e => 
               {
-                handleCategoryChange(e.target.value);
-                //appendLog(`Category value changed to: "${e.target.value}"`);
+                handleTypeChange(e.target.value);
+                //appendLog(`Ticket type value changed to: "${e.target.value}"`);
               }
             }
           >
@@ -124,21 +139,29 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
             </option>
 
 
-            {CATEGORY_OPTIONS.map(option => (
+            {TYPE_OPTIONS.map(option => (
               <option key={option.request_title} value={option.request_title}>
                 {option.request_title}
               </option>
             ))}
             </select>
           
-          {isCategoryInvalid && (
+          {isTicketTypeInvalid && (
             <span className="error-text">
-              * Category is required *
+              * Ticket type is required *
             </span>
           )}
         </div>
 
-        <input className="box" placeholder="Assigned To" />
+        <input className="box" placeholder="Assigned To"
+        value={form.assigned_to}     
+        onChange={e => 
+        {
+          setForm({ ...form, assigned_to: e.target.value });
+          //appendLog(`Assigned to changed to: "${e.target.value}"`);
+          }
+        }
+        />
         <input className="box" placeholder="Short Description" 
         value={form.request_title}     
         onChange={e => 

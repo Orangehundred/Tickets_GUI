@@ -3,6 +3,7 @@ export interface TicketData {
   request_type: string
   request_title: string
   descriptionTemplate: string
-  building: string
+  assigned_to: string
+  building?: string;  // ← the ? makes it optional
 }
 // phone_number: string
