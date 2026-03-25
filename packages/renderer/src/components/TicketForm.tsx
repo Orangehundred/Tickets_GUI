@@ -90,7 +90,8 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
       request_type: selected.request_type,
       request_title: selected.request_title,
       descriptionTemplate: selected.descriptionTemplate,
-      assigned_to: selected.assigned_to
+      assigned_to: selected.assigned_to,
+      building: selected.building ?? "" //Fallbck to empty string if undefined
 
     }))
   }

@@ -61,4 +61,5 @@ const clearLog = async () => {
 
 
 /* Ideas: Password Generator that runs playwright script to change password in Active Directory, 
-checks for phone number automatically based on whats on the right monitor, Caller ID: */
+checks for phone number automatically based on whats on the right monitor, Caller ID: 
+Settings: Dark mode/light mode that changes UI look and web page UI look*/

@@ -46,7 +46,7 @@ export async function createTicket(ticket: TicketData) {
   const locator = page.locator(".user-avatar")
   const isLoggedIn = await locator.count() > 0
 
-  console.log("isLoggedIn:", isLoggedIn)
+  //console.log("isLoggedIn:", isLoggedIn) // DEBUG
   if (!isLoggedIn) {
     console.log("Session invalid or expired. Logging in...")
 
@@ -80,36 +80,44 @@ export async function createTicket(ticket: TicketData) {
 
   await page.getByRole('textbox', { name: 'Description' }).fill(ticket.descriptionTemplate);
 
-  console.log("Assigned: " + ticket.assigned_to)
-  console.log("Building: " + ticket.building)
-  //if (ticket.building != "") {
-  //  console.log("building exists")
-  //  await page.locator('.selectize-dropdown-content').getByText(ticket.building).click();
-  //}
+  if (ticket.building != "") {
+    await page.locator('[data-placeholder-key="building"] .selectize-input').click();
+    await page.locator('[data-placeholder-key="building"] .selectize-dropdown-content').getByText(ticket.building ?? "").click();
+  } else {
+    //Make it highlighted red, or insert red text, or all caps text saying 'BUILDING NEEDED' or insert popup that says Building needs to be filled out
 
-  //await page.fill("#assigned_to", ticket.assignedTo)
-  const selectize = page.locator('.selectize-input.items')
-
-  // Remove existing selections
-  const items = selectize.locator('.item')
-  console.log("Items: " + items.count())
-
-  while (await items.count() > 0) {
-    await items.first().click()
-    await page.keyboard.press('Backspace')
-    //await page.getByRole('link', { name: '×' }).click();
+    // Wait for user to manually select a building
+    console.log("No building specified - waiting for manual selection...");
+    await page.locator('[data-placeholder-key="building"] .selectize-input div.item').first().waitFor({ state: 'visible', timeout: 120000 }); //2 Min wait time
+    console.log("Building selected, continuing...");
   }
 
-  // Type search
-  //await page.getByRole('combobox', { name: 'Assigned to' }).fill(ticket.assigned_to);
-  //await page.getByRole('option', { name: ticket.assigned_to }).click();
 
-  // Wait and select first result
-  //const firstOption = page.locator('.selectize-dropdown .option').first()
-  //await firstOption.waitFor({ state: 'visible' })
-  //await firstOption.click()
+  // Wait until at least one item is present under Assigned to dropdown
+  await page.locator('.js-work-request-new-assignment-editor .selectize-input div.item').first().waitFor({ state: 'visible' });
 
-  
-  //await page.click("button[type=submit]")
+  const selectize = page.locator('.js-work-request-new-assignment-editor .selectize-input')
+
+  // Remove existing selections
+  const items = selectize.locator('div.item');
+  //console.log("Items: " + await items.count()); //DEBUG
+  //console.log("Selectize HTML: " + await selectize.innerHTML()); //DEBUG 
+
+  while (await items.count() > 0) {
+    await items.first().locator('a.remove').click(); // click the × button
+  }
+
+  // Open dropdown and select the assignee
+  await page.locator('.js-work-request-new-assignment-editor .selectize-input')
+  await page.locator('.js-work-request-new-assignment-editor .selectize-dropdown-content').getByText(ticket.assigned_to).click();
+
+  await page.click("button[type=submit]");
+
+  await page.locator('.alert__text .hyperlink').click();
+  await page.getByRole('link', { name: ' Resolve' }).click();
+  await page.getByRole('textbox', { name: 'Resolution' }).fill(ticket.descriptionTemplate);
+
+  //await page.getByRole('button', { name: 'Resolve' }).click();
+
   //await browser.close()
 }
