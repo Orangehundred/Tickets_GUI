@@ -1,4 +1,7 @@
 import { firefox } from "playwright"
+
+import { expect, type Locator } from '@playwright/test';
+
 import type { TicketData } from "../shared/types.js"
 import * as fs from 'fs';
 
@@ -72,6 +75,36 @@ export async function createTicket(ticket: TicketData) {
     console.log("Using existing authenticated session.")
   }
 
+  //if Dark mode, then change CSS
+  await page.addStyleTag({
+    content: `
+      * {
+        background-color: #1a1a1a !important;
+        color: #e0e0e0 !important;
+        border-color: #666f77 !important;
+      }
+      input, textarea, select {
+        background-color: #2a2a2a !important;
+        color: #e0e0e0 !important;
+      }
+
+      button {
+        background-color: #0394f7 !important;
+        color: #2a2a2a !important;
+      }
+      .selectize-input.input-active,
+      .selectize-input.input-active:hover {
+        background-color: #000000 !important;
+        color: #e0e0e0 !important;
+      }   
+
+      .selectize-dropdown .option.active {
+        background-color: #0394f7 !important;
+        color: #2a2a2a !important;
+      }
+    `
+  });
+
   // --- Continue automation ---
   await page.locator('.selectize-input').first().click();
   await page.getByRole('option', { name: ticket.request_type }).click();
@@ -80,6 +113,7 @@ export async function createTicket(ticket: TicketData) {
 
   await page.getByRole('textbox', { name: 'Description' }).fill(ticket.descriptionTemplate);
 
+  // BUILDING
   if (ticket.building != "") {
     await page.locator('[data-placeholder-key="building"] .selectize-input').click();
     await page.locator('[data-placeholder-key="building"] .selectize-dropdown-content').getByText(ticket.building ?? "").click();
@@ -88,20 +122,53 @@ export async function createTicket(ticket: TicketData) {
 
     // Wait for user to manually select a building
     console.log("No building specified - waiting for manual selection...");
+    await page.locator('[data-placeholder-key="building"] .selectize-input').click();
     await page.locator('[data-placeholder-key="building"] .selectize-input div.item').first().waitFor({ state: 'visible', timeout: 120000 }); //2 Min wait time
     console.log("Building selected, continuing...");
   }
 
+  // ON BEHALF OF
+  console.log("No on behalf of selected - waiting for manual entry...");
+  await page.waitForTimeout(1500);
 
-  // Wait until at least one item is present under Assigned to dropdown
+  const selectize = page.locator('.control-group').filter({ hasText: 'On behalf of' })
+  .locator('.selectize-input');
+  await selectize.waitFor({ state: 'visible', timeout: 120000 });
+  await selectize.click();
+
+  //Detects when an item populates in the div by detecting when div changes to a div labeled .has-items
+  await page.locator('.control-group').filter({ hasText: 'On behalf of' })
+    .locator('.selectize-input.has-items')
+    .waitFor({ state: 'visible', timeout: 120000 });
+  
+  console.log("On behalf of selected, continuing...");
+
+  // PHONE: Wait for the user to type a phone number
+  console.log("No phone number specified - waiting for manual entry...");
+
+  const phoneLocator = page.locator('#Request_CustomFields_0__Value');
+  await phoneLocator.fill('');
+  await page.waitForFunction(
+    () => {
+      const value = (document.querySelector('#Request_CustomFields_0__Value') as HTMLInputElement)?.value;
+      if (!value) return false;
+      const hasNumbers = /\d/.test(value);
+      return hasNumbers && value.length === 10;
+    },
+    { timeout: 120000 }
+  );
+
+  console.log("Phone number entered, continuing...");
+
+  // ASSIGNED_TO: Wait until at least one item is present under Assigned to dropdown
   await page.locator('.js-work-request-new-assignment-editor .selectize-input div.item').first().waitFor({ state: 'visible' });
 
-  const selectize = page.locator('.js-work-request-new-assignment-editor .selectize-input')
+  const selectize2 = page.locator('.js-work-request-new-assignment-editor .selectize-input')
 
   // Remove existing selections
-  const items = selectize.locator('div.item');
+  const items = selectize2.locator('div.item');
   //console.log("Items: " + await items.count()); //DEBUG
-  //console.log("Selectize HTML: " + await selectize.innerHTML()); //DEBUG 
+  //console.log("Selectize HTML: " + await selectize2.innerHTML()); //DEBUG 
 
   while (await items.count() > 0) {
     await items.first().locator('a.remove').click(); // click the × button
@@ -111,13 +178,16 @@ export async function createTicket(ticket: TicketData) {
   await page.locator('.js-work-request-new-assignment-editor .selectize-input')
   await page.locator('.js-work-request-new-assignment-editor .selectize-dropdown-content').getByText(ticket.assigned_to).click();
 
-  await page.click("button[type=submit]");
+  console.log('Pressing Submit')
+  await page.locator(".form-actions button[type=submit]").waitFor({ state: 'visible' });
+  await page.locator(".form-actions button[type=submit]").scrollIntoViewIfNeeded();
+  //await page.locator(".form-actions button[type=submit]").click();
 
   await page.locator('.alert__text .hyperlink').click();
   await page.getByRole('link', { name: ' Resolve' }).click();
   await page.getByRole('textbox', { name: 'Resolution' }).fill(ticket.descriptionTemplate);
 
-  //await page.getByRole('button', { name: 'Resolve' }).click();
-
-  //await browser.close()
+  await page.getByRole('button', { name: 'Resolve' }).click();
+  
+  await browser.close()
 }
