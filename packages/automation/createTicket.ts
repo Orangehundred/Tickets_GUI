@@ -1,7 +1,5 @@
 import { firefox } from "playwright"
 
-import { expect, type Locator } from '@playwright/test';
-
 import type { TicketData } from "../shared/types.js"
 import * as fs from 'fs';
 
@@ -55,6 +53,18 @@ export async function createTicket(ticket: TicketData) {
 
     await page.locator('.button2.button2--secondary.button2--block.login-page__login-button').click()
 
+  // Wait to see if google button auto-logs us in
+  try {
+    await page.locator(".user-avatar").waitFor({ state: "visible", timeout: 10000 });
+    console.log("Logged in automatically with Google button, saving session...");
+    await context.storageState({ path: AUTH_PATH });
+    console.log("Authentication state saved.")
+    return;
+  } catch {
+    // Auto-login didn't happen, proceed with manual login
+    console.log("Auto-login failed, proceeding with manual login...")
+  }
+
     await page.getByRole('textbox', { name: 'Email or phone' }).fill(username as string)
     await page.getByRole('button', { name: 'Next' }).click()
 
@@ -64,7 +74,6 @@ export async function createTicket(ticket: TicketData) {
     // Wait for successful login indicator
     await page.waitForURL("**sps.gofmx.com/**", { timeout: 15000 })
     await page.waitForLoadState("networkidle")
-
     await page.locator(".user-avatar").waitFor({ state: "visible", timeout: 15000 })
 
     // 3. After successful login, save the storage state to a file
@@ -106,7 +115,11 @@ export async function createTicket(ticket: TicketData) {
   });
 
   // --- Continue automation ---
-  await page.locator('.selectize-input').first().click();
+  // Click the request type selectize and wait for dropdown
+  const requestTypeSelectize = page.locator('.selectize-input').first();
+  await requestTypeSelectize.waitFor({ state: 'visible', timeout: 30000 });
+  await requestTypeSelectize.click();
+
   await page.getByRole('option', { name: ticket.request_type }).click();
 
   await page.getByRole('textbox', { name: 'Request' }).fill(ticket.request_title);
@@ -128,20 +141,22 @@ export async function createTicket(ticket: TicketData) {
   }
 
   // ON BEHALF OF
-  console.log("No on behalf of selected - waiting for manual entry...");
-  await page.waitForTimeout(1500);
+  if (ticket.request_type != "Issue - Audio Visual Equipment") {
+    console.log("No on behalf of selected - waiting for manual entry...");
+    await page.waitForTimeout(1500);
 
-  const selectize = page.locator('.control-group').filter({ hasText: 'On behalf of' })
-  .locator('.selectize-input');
-  await selectize.waitFor({ state: 'visible', timeout: 120000 });
-  await selectize.click();
+    const selectize = page.locator('.control-group').filter({ hasText: 'On behalf of' })
+    .locator('.selectize-input');
+    await selectize.waitFor({ state: 'visible', timeout: 120000 });
+    await selectize.click();
 
-  //Detects when an item populates in the div by detecting when div changes to a div labeled .has-items
-  await page.locator('.control-group').filter({ hasText: 'On behalf of' })
-    .locator('.selectize-input.has-items')
-    .waitFor({ state: 'visible', timeout: 120000 });
-  
-  console.log("On behalf of selected, continuing...");
+    //Detects when an item populates in the div by detecting when div changes to a div labeled .has-items
+    await page.locator('.control-group').filter({ hasText: 'On behalf of' })
+      .locator('.selectize-input.has-items')
+      .waitFor({ state: 'visible', timeout: 120000 });
+    
+    console.log("On behalf of selected, continuing...");
+  }
 
   // PHONE: Wait for the user to type a phone number
   console.log("No phone number specified - waiting for manual entry...");
@@ -153,7 +168,7 @@ export async function createTicket(ticket: TicketData) {
       const value = (document.querySelector('#Request_CustomFields_0__Value') as HTMLInputElement)?.value;
       if (!value) return false;
       const hasNumbers = /\d/.test(value);
-      return hasNumbers && value.length === 10;
+      return hasNumbers && value.length >= 10;
     },
     { timeout: 120000 }
   );
@@ -181,13 +196,15 @@ export async function createTicket(ticket: TicketData) {
   console.log('Pressing Submit')
   await page.locator(".form-actions button[type=submit]").waitFor({ state: 'visible' });
   await page.locator(".form-actions button[type=submit]").scrollIntoViewIfNeeded();
-  //await page.locator(".form-actions button[type=submit]").click();
+  await page.locator(".form-actions button[type=submit]").click();
 
-  await page.locator('.alert__text .hyperlink').click();
-  await page.getByRole('link', { name: ' Resolve' }).click();
+  // Wait for the alert to appear after submission before clicking
+  await page.locator('.alert__text .hyperlink').first().waitFor({ state: 'visible', timeout: 30000 });
+  await page.locator('.alert__text .hyperlink').first().click();
+
+  await page.getByRole('link', { name: ' Resolve' }).click();
   await page.getByRole('textbox', { name: 'Resolution' }).fill(ticket.descriptionTemplate);
 
   await page.getByRole('button', { name: 'Resolve' }).click();
   
-  await browser.close()
 }
