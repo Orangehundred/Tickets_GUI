@@ -37,7 +37,49 @@ export async function createTicket(ticket: TicketData) {
   } else {
     console.log("No saved session found. Creating new session...")
     context = await browser.newContext()
+    
   }
+  
+  const darkModeCSS  = `
+      * {
+        background-color: #1a1a1a !important;
+        color: #e0e0e0 !important;
+        border-color: #666f77 !important;
+      }
+      input, textarea, select {
+        background-color: #2a2a2a !important;
+        color: #e0e0e0 !important;
+      }
+
+      button {
+        background-color: #0394f7 !important;
+        color: #2a2a2a !important;
+      }
+      .selectize-input.input-active,
+      .selectize-input.input-active:hover {
+        background-color: #000000 !important;
+        color: #e0e0e0 !important;
+      }   
+
+      .selectize-dropdown .option.active {
+        background-color: #0394f7 !important;
+        color: #2a2a2a !important;
+      }
+    `
+  // Injects dark mode on every new page/navigation automatically
+  await context.addInitScript((css) => {
+    const applyDarkMode = () => {
+      const style = document.createElement('style');
+      style.textContent = css;
+      document.head.appendChild(style);
+    };
+    // Apply immediately and on any DOM changes
+    if (document.head) {
+      applyDarkMode();
+    } else {
+      document.addEventListener('DOMContentLoaded', applyDarkMode);
+    }
+  }, darkModeCSS);
 
   const page = await context.newPage()
 
@@ -83,36 +125,6 @@ export async function createTicket(ticket: TicketData) {
   } else {
     console.log("Using existing authenticated session.")
   }
-
-  //if Dark mode, then change CSS
-  await page.addStyleTag({
-    content: `
-      * {
-        background-color: #1a1a1a !important;
-        color: #e0e0e0 !important;
-        border-color: #666f77 !important;
-      }
-      input, textarea, select {
-        background-color: #2a2a2a !important;
-        color: #e0e0e0 !important;
-      }
-
-      button {
-        background-color: #0394f7 !important;
-        color: #2a2a2a !important;
-      }
-      .selectize-input.input-active,
-      .selectize-input.input-active:hover {
-        background-color: #000000 !important;
-        color: #e0e0e0 !important;
-      }   
-
-      .selectize-dropdown .option.active {
-        background-color: #0394f7 !important;
-        color: #2a2a2a !important;
-      }
-    `
-  });
 
   // --- Continue automation ---
   // Click the request type selectize and wait for dropdown
@@ -162,17 +174,21 @@ export async function createTicket(ticket: TicketData) {
   console.log("No phone number specified - waiting for manual entry...");
 
   const phoneLocator = page.locator('#Request_CustomFields_0__Value');
-  await phoneLocator.fill('');
-  await page.waitForFunction(
-    () => {
-      const value = (document.querySelector('#Request_CustomFields_0__Value') as HTMLInputElement)?.value;
-      if (!value) return false;
-      const hasNumbers = /\d/.test(value);
-      return hasNumbers && value.length >= 10;
-    },
-    { timeout: 120000 }
-  );
 
+    if (ticket.phoneNumber  != "") {
+      await phoneLocator.fill(ticket.phoneNumber  as string);
+    } else {
+      await phoneLocator.fill('');
+      await page.waitForFunction(
+        () => {
+          const value = (document.querySelector('#Request_CustomFields_0__Value') as HTMLInputElement)?.value;
+          if (!value) return false;
+          const hasNumbers = /\d/.test(value);
+          return hasNumbers && value.length >= 10;
+        },
+        { timeout: 120000 }
+      );
+    }
   console.log("Phone number entered, continuing...");
 
   // ASSIGNED_TO: Wait until at least one item is present under Assigned to dropdown
@@ -193,13 +209,22 @@ export async function createTicket(ticket: TicketData) {
   await page.locator('.js-work-request-new-assignment-editor .selectize-input')
   await page.locator('.js-work-request-new-assignment-editor .selectize-dropdown-content').getByText(ticket.assigned_to).click();
 
-  console.log('Pressing Submit')
-  await page.locator(".form-actions button[type=submit]").waitFor({ state: 'visible' });
-  await page.locator(".form-actions button[type=submit]").scrollIntoViewIfNeeded();
-  await page.locator(".form-actions button[type=submit]").click();
+  await page.waitForTimeout(2000);
+  const currentUrl = page.url();
+
+  // Retry submit btn until URL changes
+  while (page.url() === currentUrl) {
+    let submitBtn = page.locator(".form-actions button[type=submit]");
+    await submitBtn.waitFor({ state: 'visible' });
+    await submitBtn.scrollIntoViewIfNeeded();
+    await submitBtn.click();
+    
+    console.log('Submit clicked, waiting for page to change...');
+    await page.waitForTimeout(3000);
+  }
 
   // Wait for the alert to appear after submission before clicking
-  await page.locator('.alert__text .hyperlink').first().waitFor({ state: 'visible', timeout: 30000 });
+  await page.locator('.alert__text .hyperlink').first().waitFor({ state: 'visible', timeout: 10000 });
   await page.locator('.alert__text .hyperlink').first().click();
 
   await page.getByRole('link', { name: ' Resolve' }).click();
@@ -207,4 +232,13 @@ export async function createTicket(ticket: TicketData) {
 
   await page.getByRole('button', { name: 'Resolve' }).click();
   
+  const resolvedMessage = await page.locator('.alert__text .hyperlink').textContent()
+  const ticketHref = await page.locator('.alert__text .hyperlink').first().getAttribute('href');
+  const ticketLink = `https://sps.gofmx.com${ticketHref}`;
+
+  console.log(resolvedMessage?.trim());
+  console.log('Ticket link: ' + ticketLink)
+
+  //await page.waitForTimeout(5000);
+  //await browser.close();
 }

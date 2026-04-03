@@ -1,6 +1,4 @@
 .env
-creds.env
-data.json
 playwright/.auth/
 node_modules
 .DS_Store
@@ -58,3 +56,5 @@ thumbs.db
 # Editor-based Rest Client
 .idea/httpRequests
 /.idea/csv-plugin.xml
+creds.env
+data.json

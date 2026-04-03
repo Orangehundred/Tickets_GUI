@@ -5,6 +5,7 @@ import dataList from '../../../../data.json';
 
 const assigneeList = dataList.assignees;
 const buildingList = dataList.buildings;
+const phoneList = dataList.phone;
 
 const TYPE_OPTIONS = [
   {
@@ -12,35 +13,35 @@ const TYPE_OPTIONS = [
     request_title: "Staff Password Reset",
     descriptionTemplate:
       "User requested a password reset. I reset the password and confirmed the user was able to sign in successfully.",
-    assigned_to: assigneeList[0],
+    assigned_to: assigneeList[0]
   },
   {
     request_type: "Issue - User Accounts",
     request_title: "Password Expired",
     descriptionTemplate:
       "User’s password had expired. Password was reset and access was restored.",
-    assigned_to: assigneeList[0],
+    assigned_to: assigneeList[0]
   },
   {
     request_type: "Issue - User Accounts",
     request_title: "Student Password Reset",
     descriptionTemplate:
       "Student requested a password reset. Password was reset and verified with the user.",
-    assigned_to: assigneeList[0],
+    assigned_to: assigneeList[0]
   },
   {
     request_type: "Issue - User Accounts",
     request_title: "Parent HAC Password Reset",
     descriptionTemplate:
       "Parent called and requested a password reset. I reset their password after confirming their identity with their student's ID number. I then confirmed the user was able to sign in successfully.",
-    assigned_to: assigneeList[0],
+    assigned_to: assigneeList[0]
   },
   {
     request_type: "Issue - Staff Device",
     request_title: "Bitlocker Recovery",
     descriptionTemplate:
       "Provided BitLocker recovery key and confirmed the device was unlocked.",
-    assigned_to: assigneeList[0],
+    assigned_to: assigneeList[0]
   },
   {
     request_type: "Issue - Audio Visual Equipment",
@@ -48,13 +49,14 @@ const TYPE_OPTIONS = [
     descriptionTemplate:
       "Performed AV board room check. All equipment tested and functioning properly.",
     assigned_to: assigneeList[0],
+    phoneNumber: phoneList[0],
     building: buildingList[0],
   },
   {
     request_type: "Other",
     request_title: "OTHER",
     descriptionTemplate: "",
-    assigned_to: "",
+    assigned_to: ""
   }
 ]
 
@@ -70,6 +72,7 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
     request_title: "",
     descriptionTemplate: "",
     assigned_to: "",
+    phoneNumber: "",
     building: ""
   })
 
@@ -91,7 +94,8 @@ export default function TicketForm({ appendLog }: TicketFormProps) {
       request_title: selected.request_title,
       descriptionTemplate: selected.descriptionTemplate,
       assigned_to: selected.assigned_to,
-      building: selected.building ?? "" //Fallbck to empty string if undefined
+      phoneNumber: selected.phoneNumber ?? "",
+      building: selected.building ?? "" //Fallback to empty string if undefined
 
     }))
   }
