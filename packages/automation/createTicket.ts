@@ -96,22 +96,33 @@ export async function createTicket(ticket: TicketData) {
     await page.locator('.button2.button2--secondary.button2--block.login-page__login-button').click()
 
   // Wait to see if google button auto-logs us in
-  try {
-    await page.locator(".user-avatar").waitFor({ state: "visible", timeout: 10000 });
-    console.log("Logged in automatically with Google button, saving session...");
+  const saveSession = async () => {
     await context.storageState({ path: AUTH_PATH });
-    console.log("Authentication state saved.")
-    return;
-  } catch {
-    // Auto-login didn't happen, proceed with manual login
-    console.log("Auto-login failed, proceeding with manual login...")
+    console.log("Authentication state saved.");
+  };
+  
+  async function isVisible(selector: string): Promise<boolean> {
+    return page.locator(selector).waitFor({ state: "visible", timeout: 10000 }).then(() => true).catch(() => false);
   }
 
-    await page.getByRole('textbox', { name: 'Email or phone' }).fill(username as string)
-    await page.getByRole('button', { name: 'Next' }).click()
+  if (await isVisible(".user-avatar")) {
+    console.log("Logged in automatically with Google button, saving session...");
+    await saveSession();
 
-    await page.getByRole('textbox', { name: 'Enter your password' }).fill(password as string)
-    await page.getByRole('button', { name: 'Next' }).click()
+  } else if (await isVisible("text=Choose an account")) {
+    console.log("Found account selection screen, trying to click on email...");
+    await page.getByRole("link", { name: username as string }).click();
+    await page.getByRole("textbox", { name: "Enter your password" }).fill(password as string);
+    await page.getByRole("button", { name: "Next" }).click();
+    await saveSession();
+
+  } else {
+    console.log("Auto-login failed, proceeding with manual login...");
+    await page.getByRole("textbox", { name: "Email or phone" }).fill(username as string);
+    await page.getByRole("button", { name: "Next" }).click();
+    await page.getByRole("textbox", { name: "Enter your password" }).fill(password as string);
+    await page.getByRole("button", { name: "Next" }).click();
+  }
 
     // Wait for successful login indicator
     await page.waitForURL("**sps.gofmx.com/**", { timeout: 15000 })
@@ -239,6 +250,6 @@ export async function createTicket(ticket: TicketData) {
   console.log(resolvedMessage?.trim());
   console.log('Ticket link: ' + ticketLink)
 
-  //await page.waitForTimeout(5000);
-  //await browser.close();
+  await page.waitForTimeout(5000);
+  await browser.close();
 }
