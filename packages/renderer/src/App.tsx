@@ -1,5 +1,6 @@
 import { useState } from "react"
 import TicketForm from "./components/TicketForm"
+import PasswordInfo from "./components/PasswordInfo"
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(1)
@@ -38,7 +39,7 @@ const clearLog = async () => {
 
       <div className="center">
         {activeTab === 1 && <TicketForm appendLog={appendLog} />}
-        {activeTab === 2 && <label>PasswordGenerator</label>}
+        {activeTab === 2 && <PasswordInfo appendLog={appendLog} />}
         {activeTab === 3 && <label>Settings</label>}
       </div>
       <div className="right">

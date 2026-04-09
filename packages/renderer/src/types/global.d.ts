@@ -1,11 +1,12 @@
-import type { TicketData } from "../../../shared/types"
+import type { PasswordData, TicketData } from "../../../shared/types"
 
 export {}
 
 declare global {
   interface Window {
     api: {
-      createTicket: (ticketData: TicketData) => Promise<any>
+      createTicket: (ticketData: TicketData) => Promise<any>,
+      createPassword: (passwordData: PasswordData) => Promise<any>
     }
   }
 }

@@ -38,8 +38,8 @@ initApp(
 
 // Connecting playwright test to Electron main process
 import { ipcMain } from "electron"
-import { createTicket } from "../packages/automation/createTicket.ts"
+import { createTicket }  from "../packages/automation/createTicket.ts"
+import { createPassword } from "../packages/automation/createPassword.ts"
 
-ipcMain.handle("create-ticket", async (_, ticket) => {
-  await createTicket(ticket)
-})
+ipcMain.handle("create-ticket",   async (_, ticket)   => { await createTicket(ticket) })
+ipcMain.handle("create-password", async (_, passInfo) => { await createPassword(passInfo) })

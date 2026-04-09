@@ -1,6 +1,5 @@
 import { useState } from "react"
 
-
 import dataList from '../../../../data.json';
 
 const assigneeList = dataList.assignees;
@@ -61,11 +60,11 @@ const TYPE_OPTIONS = [
 ]
 
 // Calls appendLog in App.tsx through props
-type TicketFormProps = {
+type AppendLogProps = {
   appendLog: (message: string) => void
 }
 
-export default function TicketForm({ appendLog }: TicketFormProps) {
+export default function TicketForm({ appendLog }: AppendLogProps) {
 
   const [form, setForm] = useState({
     request_type: "",

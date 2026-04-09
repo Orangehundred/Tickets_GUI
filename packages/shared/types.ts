@@ -7,4 +7,9 @@ export interface TicketData {
   phoneNumber?: string
   building?: string // ← the ? makes it optional
 }
-// phone_number: string
+
+export interface PasswordData {
+  password: string,
+  staffID?: string,
+  staff_username?: string
+}
