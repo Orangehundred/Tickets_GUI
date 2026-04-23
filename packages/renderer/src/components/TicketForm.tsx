@@ -8,6 +8,12 @@ const phoneList = dataList.phone;
 
 const TYPE_OPTIONS = [
   {
+    request_type: "Other",
+    request_title: "OTHER",
+    descriptionTemplate: "",
+    assigned_to: ""
+  },
+  {
     request_type: "Issue - User Accounts",
     request_title: "Staff Password Reset",
     descriptionTemplate:
@@ -25,7 +31,7 @@ const TYPE_OPTIONS = [
     request_type: "Issue - User Accounts",
     request_title: "Student Password Reset",
     descriptionTemplate:
-      "Student requested a password reset. Password was reset and verified with the user.",
+      "User requested a password reset for a student. I verified their ID, and their password was reset.",
     assigned_to: assigneeList[0]
   },
   {
@@ -52,10 +58,18 @@ const TYPE_OPTIONS = [
     building: buildingList[0],
   },
   {
-    request_type: "Other",
-    request_title: "OTHER",
-    descriptionTemplate: "",
+    request_type: "Issue - Audio Visual Equipment",
+    request_title: "Cleartouch board connectivity Issues",
+    descriptionTemplate:
+      "Cleartouch board in the room is experiencing issues with connectivity.",
     assigned_to: ""
+  },
+  {
+    request_type: "Issue - Staff Device",
+    request_title: "Remoted into device to diagnose problem",
+    descriptionTemplate:
+      "I remoted into the staff's device to help troubleshoot. After making the proper fixes or workaround, the user is able to work again normally.",
+    assigned_to: assigneeList[0]
   }
 ]
 
@@ -167,13 +181,19 @@ export default function TicketForm({ appendLog }: AppendLogProps) {
         }
         />
         <input className="box" placeholder="Short Description" 
-        value={form.request_title}     
-        onChange={e => 
-        {
-          setForm({ ...form, request_title: e.target.value });
-          //appendLog(`Short description changed to: "${e.target.value}"`);
-          }
-        }
+          value={form.request_title}     
+          onChange={e => {
+            setForm({ ...form, request_title: e.target.value });
+            console.log(e.target.value)
+          }}
+          onBlur={e => {
+            console.log("On click away " + e.target.value)
+            if (TYPE_OPTIONS.find(t => t.request_title === e.target.value)) {
+              handleTypeChange(e.target.value);
+            } else {
+              handleTypeChange("OTHER");
+            }
+          }}
         />
 
         <textarea className="box" placeholder="Description"

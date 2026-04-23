@@ -10,13 +10,8 @@ const AUTH_PATH = "playwright/.auth/admanager-auth.json"
 import * as dotenv from 'dotenv';
 dotenv.config({ path: './creds.env' });
 
-const username = process.env.FMX_USERNAME
-const password = process.env.FMX_PASSWORD
-
-console.log('dotenv parsed:', {
-  //USERNAME: process.env.FMX_USERNAME,
-  //PASSWORD: process.env.FMX_PASSWORD
-});
+const username = process.env.ADMANAGER_USER
+const password = process.env.ADMANAGER_PASS
 
 if (!username || !password) {
   throw new Error("Missing USERNAME or PASSWORD in creds.env")
@@ -32,11 +27,14 @@ export async function createPassword(passwordInfo: PasswordData) {
   if (fs.existsSync(AUTH_PATH)) {
     console.log("Loading saved session...")
     context = await browser.newContext({
+      ignoreHTTPSErrors: true, //Was getting error "Warning: Potential Security Risk Ahead" when navigating to webpage
       storageState: AUTH_PATH
     })
   } else {
     console.log("No saved session found. Creating new session...")
-    context = await browser.newContext()
+    context = await browser.newContext({
+      ignoreHTTPSErrors: true, //Was getting error "Warning: Potential Security Risk Ahead" when navigating to webpage
+    })
     
   }
   
@@ -48,6 +46,9 @@ export async function createPassword(passwordInfo: PasswordData) {
       }
       input, textarea, select {
         background-color: #2a2a2a !important;
+        color: #e0e0e0 !important;
+      }
+      .linput {
         color: #e0e0e0 !important;
       }
 
@@ -81,38 +82,65 @@ export async function createPassword(passwordInfo: PasswordData) {
     }
   }, darkModeCSS);
 
+  async function isVisible(selector: string): Promise<boolean> {
+    return page.locator(selector).waitFor({ state: "visible", timeout: 10000 }).then(() => true).catch(() => false);
+  }
+
   const page = await context.newPage()
 
   await page.goto("https://spsadmanager.sps.org/AppsHome.do?LogoutFromSSO=true#/mgmt?reportCategory=51")
 
   // 2. Check if already logged in
-  const locator = page.locator("admp-icon icn-login-user")
+  await page.waitForTimeout(3000);
+  const locator = page.locator(".admp-icon.icn-login-user")
   const isLoggedIn = await locator.count() > 0
 
   //console.log("isLoggedIn:", isLoggedIn) // DEBUG
   if (!isLoggedIn) {
     console.log("Admanager session invalid or expired. Logging in...")
 
-    await page.locator('#j_username').fill(username as string)
-    await page.locator('#j_password').fill(password as string)
+    await page.locator('#j_username').first().fill(username as string)
+    await page.locator('#j_password').first().fill(password as string)
     await page.locator('#loginButton').click()
 
+    if (await isVisible("text=Log in using Google Authenticator")) {
+      console.log("Website prompting for 2FA, waiting for user to input code...");
+      await page.locator('#TFA_GOOGLE_AUTHENTICATOR_SECRET_KEY').click();
+      await page.waitForFunction(
+        () => {
+          const value = (document.querySelector('#TFA_GOOGLE_AUTHENTICATOR_SECRET_KEY') as HTMLInputElement)?.value;
+          if (!value) return false;
+          const hasNumbers = /\d/.test(value);
+          return hasNumbers && value.length == 6;
+        },
+        { timeout: 120000 }
+      );
+      console.log("2FA Code entered, continuing...");
+      await page.getByRole("button", { name: "Verify code" }).click();
+    }
 
     // Wait for successful login indicator
-    await page.locator("admp-icon icn-login-user").waitFor({ state: "visible", timeout: 15000 })
+    await page.waitForTimeout(3000);
+    await page.locator(".admp-icon.icn-login-user").waitFor({ state: "visible", timeout: 15000 })
 
     // 3. After successful login, save the storage state to a file
     await context.storageState({ path: AUTH_PATH })
     console.log("Authentication state saved.")
-    console.log(fs.readFileSync(AUTH_PATH, "utf-8"))
+    //console.log(fs.readFileSync(AUTH_PATH, "utf-8")) //DEBUG
   } else {
     console.log("Using existing authenticated session.")
   }
 
   // Continue Automation
-  await page.getByRole('link', { name: 'Modify Single User' }).click()
+  await page.getByText('Modify Single User', { exact: true }).nth(1).click();
 
-  await page.locator('#searchBox_').click()
+  await page.waitForTimeout(3000);
+  console.log("Trying to click");
+  await page.locator('#searchBox_').click();
+
+  console.log(passwordInfo.password)
+  console.log(passwordInfo.staffID)
+  console.log(passwordInfo.staff_username)
   /*
   await page.locator('#searchBox_').fill(passwordInfo.staffID) //Search by staffID or username
   await page.locator('#searchBox_').press('Enter');
