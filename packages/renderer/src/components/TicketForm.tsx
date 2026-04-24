@@ -131,7 +131,7 @@ export default function TicketForm({ appendLog }: AppendLogProps) {
       console.log("Creating ticket...")
 
       await window.api.createTicket(form)
-      appendLog("Ticket creation request sent")
+      appendLog("Ticket creation request sent & finished")
     }
   //
 
@@ -184,14 +184,15 @@ export default function TicketForm({ appendLog }: AppendLogProps) {
           value={form.request_title}     
           onChange={e => {
             setForm({ ...form, request_title: e.target.value });
-            console.log(e.target.value)
           }}
+          //If request_title input field is clicked off of with new typed value, it updates request_type if it matches 
           onBlur={e => {
-            console.log("On click away " + e.target.value)
-            if (TYPE_OPTIONS.find(t => t.request_title === e.target.value)) {
+            const match = TYPE_OPTIONS.find(t => t.request_title === e.target.value);
+            if (match) {
               handleTypeChange(e.target.value);
             } else {
-              handleTypeChange("OTHER");
+              // Only update request_type, keep request_title as whatever was typed
+              setForm(prev => ({ ...prev, request_type: "OTHER" }));
             }
           }}
         />
@@ -203,8 +204,6 @@ export default function TicketForm({ appendLog }: AppendLogProps) {
           }
         />
         <button className="submit-btn" onClick={handleSubmit}>Create Ticket</button>
-
     </center>
-
   )
 }
