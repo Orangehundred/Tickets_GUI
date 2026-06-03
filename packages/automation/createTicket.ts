@@ -13,11 +13,6 @@ dotenv.config({ path: './creds.env' });
 const username = process.env.FMX_USERNAME
 const password = process.env.FMX_PASSWORD
 
-console.log('dotenv parsed:', {
-  //USERNAME: process.env.FMX_USERNAME,
-  //PASSWORD: process.env.FMX_PASSWORD
-});
-
 if (!username || !password) {
   throw new Error("Missing USERNAME or PASSWORD in creds.env")
 }
@@ -143,7 +138,14 @@ export async function createTicket(ticket: TicketData) {
   await requestTypeSelectize.waitFor({ state: 'visible', timeout: 30000 });
   await requestTypeSelectize.click();
 
-  await page.getByRole('option', { name: ticket.request_type }).click();
+  if (ticket.request_type != "Other") {
+      await page.getByRole('option', { name: ticket.request_type }).click();
+  } else {
+    // Wait for user to manually select a Request type
+    console.log("Other Request Type - waiting for manual selection...");
+    await page.locator('.selectize-input div.item').first().waitFor({ state: 'visible', timeout: 180000 }); //2 Min wait time
+    console.log("Request type selected, continuing...");
+  }
 
   await page.getByRole('textbox', { name: 'Request' }).fill(ticket.request_title);
 
@@ -159,7 +161,7 @@ export async function createTicket(ticket: TicketData) {
     // Wait for user to manually select a building
     console.log("No building specified - waiting for manual selection...");
     await page.locator('[data-placeholder-key="building"] .selectize-input').click();
-    await page.locator('[data-placeholder-key="building"] .selectize-input div.item').first().waitFor({ state: 'visible', timeout: 120000 }); //2 Min wait time
+    await page.locator('[data-placeholder-key="building"] .selectize-input div.item').first().waitFor({ state: 'visible', timeout: 180000 }); //2 Min wait time
     console.log("Building selected, continuing...");
   }
 
@@ -170,13 +172,13 @@ export async function createTicket(ticket: TicketData) {
 
     const selectize = page.locator('.control-group').filter({ hasText: 'On behalf of' })
     .locator('.selectize-input');
-    await selectize.waitFor({ state: 'visible', timeout: 120000 });
+    await selectize.waitFor({ state: 'visible', timeout: 180000 });
     await selectize.click();
 
     //Detects when an item populates in the div by detecting when div changes to a div labeled .has-items
     await page.locator('.control-group').filter({ hasText: 'On behalf of' })
       .locator('.selectize-input.has-items')
-      .waitFor({ state: 'visible', timeout: 120000 });
+      .waitFor({ state: 'visible', timeout: 180000 });
     
     console.log("On behalf of selected, continuing...");
   }
@@ -197,30 +199,34 @@ export async function createTicket(ticket: TicketData) {
           const hasNumbers = /\d/.test(value);
           return hasNumbers && value.length >= 10;
         },
-        { timeout: 120000 }
+        { timeout: 180000 }
       );
     }
   console.log("Phone number entered, continuing...");
 
   // ASSIGNED_TO: Wait until at least one item is present under Assigned to dropdown
-  await page.locator('.js-work-request-new-assignment-editor .selectize-input div.item').first().waitFor({ state: 'visible' });
+  await page.locator('.js-work-request-new-assignment-editor .selectize-input div.item').first().waitFor({ state: 'visible', timeout: 180000 });
 
   const selectize2 = page.locator('.js-work-request-new-assignment-editor .selectize-input')
 
   // Remove existing selections
   const items = selectize2.locator('div.item');
-  //console.log("Items: " + await items.count()); //DEBUG
-  //console.log("Selectize HTML: " + await selectize2.innerHTML()); //DEBUG 
 
   while (await items.count() > 0) {
     await items.first().locator('a.remove').click(); // click the × button
   }
 
   // Open dropdown and select the assignee
-  await page.locator('.js-work-request-new-assignment-editor .selectize-input')
-  await page.locator('.js-work-request-new-assignment-editor .selectize-dropdown-content').getByText(ticket.assigned_to).click();
+if (ticket.assigned_to != "") {
+  await selectize2.getByText(ticket.assigned_to).click();
+} else {
+  console.log("No Assignee - waiting for manual selection...");
+  await page.locator('.js-work-request-new-assignment-editor .selectize-input div.item').first().waitFor({ state: 'visible', timeout: 180000 });
+  console.log("Assignee selected, continuing...");
+}
 
   await page.waitForTimeout(2000);
+
   const currentUrl = page.url();
 
   // Retry submit btn until URL changes
@@ -235,21 +241,24 @@ export async function createTicket(ticket: TicketData) {
   }
 
   // Wait for the alert to appear after submission before clicking
-  await page.locator('.alert__text .hyperlink').first().waitFor({ state: 'visible', timeout: 10000 });
-  await page.locator('.alert__text .hyperlink').first().click();
+  await page.locator('.alert__text a.hyperlink[href^="/technology-requests/"]').waitFor({ state: 'visible', timeout: 10000 });
+  await page.locator('.alert__text a.hyperlink[href^="/technology-requests/"]').first().click();
 
   await page.getByRole('link', { name: ' Resolve' }).click();
   await page.getByRole('textbox', { name: 'Resolution' }).fill(ticket.descriptionTemplate);
 
   await page.getByRole('button', { name: 'Resolve' }).click();
   
-  const resolvedMessage = await page.locator('.alert__text .hyperlink').textContent()
+  const resolvedMessage = await page.locator('.alert__text a.hyperlink[href^="/technology-requests/"]').textContent()
   const ticketHref = await page.locator('.alert__text .hyperlink').first().getAttribute('href');
   const ticketLink = `https://sps.gofmx.com${ticketHref}`;
 
   console.log(resolvedMessage?.trim());
   console.log('Ticket link: ' + ticketLink)
 
-  await page.waitForTimeout(5000);
+  await page.waitForTimeout(6000);
   await browser.close();
 }
+
+
+//Make entry boxes grayed out until a ticket request_type is selected once at least

@@ -133,8 +133,9 @@ export default function TicketForm({ appendLog }: AppendLogProps) {
       await window.api.createTicket(form)
       appendLog("Ticket creation request sent & finished")
     }
-  //
 
+  //
+const ticketTypeSelected = form.request_type !== "" && form.request_type !== undefined;
 
   return (
     <center>
@@ -148,7 +149,6 @@ export default function TicketForm({ appendLog }: AppendLogProps) {
             onChange={e => 
               {
                 handleTypeChange(e.target.value);
-                //appendLog(`Ticket type value changed to: "${e.target.value}"`);
               }
             }
           >
@@ -171,16 +171,18 @@ export default function TicketForm({ appendLog }: AppendLogProps) {
           )}
         </div>
 
-        <input className="box" placeholder="Assigned To"
-        value={form.assigned_to}     
-        onChange={e => 
+        <input className="box" placeholder="Assigned To" 
+          disabled={!ticketTypeSelected}
+          value={form.assigned_to}     
+          onChange={e => 
         {
           setForm({ ...form, assigned_to: e.target.value });
           //appendLog(`Assigned to changed to: "${e.target.value}"`);
           }
         }
         />
-        <input className="box" placeholder="Short Description" 
+        <input className="box" placeholder="Short Description"
+          disabled={!ticketTypeSelected}
           value={form.request_title}     
           onChange={e => {
             setForm({ ...form, request_title: e.target.value });
@@ -198,6 +200,7 @@ export default function TicketForm({ appendLog }: AppendLogProps) {
         />
 
         <textarea className="box" placeholder="Description"
+          disabled={!ticketTypeSelected}
           value={form.descriptionTemplate}
           onChange={e =>
             setForm({ ...form, descriptionTemplate: e.target.value })
@@ -207,3 +210,5 @@ export default function TicketForm({ appendLog }: AppendLogProps) {
     </center>
   )
 }
+
+//When its request_type 'OTHER' , needs to click into dropdown and wait for population, then autofill 'Request' field with text from request_title
