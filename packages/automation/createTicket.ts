@@ -217,13 +217,13 @@ export async function createTicket(ticket: TicketData) {
   }
 
   // Open dropdown and select the assignee
-if (ticket.assigned_to != "") {
-  await selectize2.getByText(ticket.assigned_to).click();
-} else {
-  console.log("No Assignee - waiting for manual selection...");
-  await page.locator('.js-work-request-new-assignment-editor .selectize-input div.item').first().waitFor({ state: 'visible', timeout: 180000 });
+  if (ticket.assigned_to != "") {
+    await page.locator('.js-work-request-new-assignment-editor .selectize-dropdown-content').getByText(ticket.assigned_to).click();
+  } else {
+    console.log("No Assignee - waiting for manual selection...");
+    await page.locator('.js-work-request-new-assignment-editor .selectize-input div.item').first().waitFor({ state: 'visible', timeout: 180000 });
+  }
   console.log("Assignee selected, continuing...");
-}
 
   await page.waitForTimeout(2000);
 
@@ -259,6 +259,3 @@ if (ticket.assigned_to != "") {
   await page.waitForTimeout(6000);
   await browser.close();
 }
-
-
-//Make entry boxes grayed out until a ticket request_type is selected once at least
