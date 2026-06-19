@@ -250,7 +250,6 @@ export async function createTicket(ticket: TicketData) {
   await page.getByRole('button', { name: 'Resolve' }).click();
   
   const resolvedMessage = await page.locator('.alert__text a.hyperlink[href^="/technology-requests/"]').textContent()
-  const ticketHref = await page.locator('.alert__text .hyperlink').first().getAttribute('href');
   
   console.log(resolvedMessage?.trim());
   const ticketNum = resolvedMessage?.replace(/\D/g, "")

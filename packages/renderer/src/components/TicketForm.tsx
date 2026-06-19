@@ -195,10 +195,15 @@ const ticketTypeSelected = form.request_type !== "" && form.request_type !== und
             disabled={!ticketTypeSelected}
             onClick={async () => {
               try {
-                appendLog("Trying to extract phone number from screen...");
+                const status = await window.api.getPhoneConfigStatus();
+                if (status.exists) {
+                  appendLog(`Config file found — extracting phone number from monitor at (${status.displayLeft}, ${status.displayTop})...`);
+                } else {
+                  appendLog("No config file found — prompting user to select a region...");
+                }
+
                 const number = await window.api.extractPhoneNumber();
                 setForm(prev => ({ ...prev, phoneNumber: number }));
-                console.log(`Extracted phone number: ${number}`)
                 appendLog(`Extracted phone number: ${number}`);
               } catch (err) {
                 appendLog("Failed to extract phone number — try re-selecting the region");

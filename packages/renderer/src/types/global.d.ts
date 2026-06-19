@@ -7,6 +7,7 @@ declare global {
     api: {
       createTicket: (ticketData: TicketData) => Promise<any>,
       createPassword: (passwordData: PasswordData) => Promise<any>,
+      getPhoneConfigStatus: () => Promise<{ exists: boolean; displayLeft?: number; displayTop?: number }>;
       extractPhoneNumber: () => Promise<string>,
       resetPhoneRegion: () => Promise<boolean>;
     }

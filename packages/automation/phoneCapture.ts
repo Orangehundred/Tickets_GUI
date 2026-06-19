@@ -2,7 +2,6 @@ import { BrowserWindow, screen, ipcMain } from "electron";
 import * as fs from "fs";
 import * as path from "path";
 import screenshot from "screenshot-desktop";
-console.log(Object.keys(screenshot));
 import { createWorker } from "tesseract.js";
 import sharp from "sharp"; // npm install sharp - used to crop the screenshot
 
@@ -153,3 +152,13 @@ export function registerPhoneCaptureHandlers() {
     return true;
   });
 }
+
+export function getConfigStatus(): { exists: boolean; displayLeft?: number; displayTop?: number } {
+  const config = loadConfig();
+  if (!config) return { exists: false };
+  return { exists: true, displayLeft: config.displayLeft, displayTop: config.displayTop };
+}
+
+ipcMain.handle("get-phone-config-status", async () => {
+  return getConfigStatus();
+});
