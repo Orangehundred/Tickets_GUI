@@ -1,6 +1,7 @@
 # Tickets Automation GUI
-
--Screenshot Preview-
+<p align="center">
+  <img width="1464" height="813" alt="image" src="https://github.com/user-attachments/assets/31ed67e1-c31c-4101-8761-198658ec3aa1" />
+</p>
 
 ## Quick Start Guide
 1. Check current Node version with: node -v
