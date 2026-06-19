@@ -57,5 +57,7 @@ thumbs.db
 .idea/httpRequests
 /.idea/csv-plugin.xml
 
+#Tickets_Gui data files
 creds.env
 data.json
+phoneRegionConfig.json
