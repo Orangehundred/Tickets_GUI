@@ -181,6 +181,34 @@ const ticketTypeSelected = form.request_type !== "" && form.request_type !== und
           }
         }
         />
+        
+        <div className="phone-row">
+          <input className="box" placeholder="Phone Number" 
+            disabled={!ticketTypeSelected}
+            value={form.phoneNumber}     
+            onChange={e => {
+              const cleaned = e.target.value.replace(/[^0-9]/g, '').slice(0, 10);
+              setForm({ ...form, phoneNumber: cleaned });
+            }}
+          />
+          <button className="submit-btn" style={{ margin: "0px 0px 10px 0px"}}
+            disabled={!ticketTypeSelected}
+            onClick={async () => {
+              try {
+                appendLog("Trying to extract phone number from screen...");
+                const number = await window.api.extractPhoneNumber();
+                setForm(prev => ({ ...prev, phoneNumber: number }));
+                console.log(`Extracted phone number: ${number}`)
+                appendLog(`Extracted phone number: ${number}`);
+              } catch (err) {
+                appendLog("Failed to extract phone number — try re-selecting the region");
+              }
+            }}
+          >
+            Get #
+          </button>
+        </div>
+
         <input className="box" placeholder="Short Description"
           disabled={!ticketTypeSelected}
           value={form.request_title}     
@@ -210,5 +238,3 @@ const ticketTypeSelected = form.request_type !== "" && form.request_type !== und
     </center>
   )
 }
-
-//When its request_type 'OTHER' , needs to click into dropdown and wait for population, then autofill 'Request' field with text from request_title

@@ -30,13 +30,18 @@
     "@npmcli/map-workspaces": "5.0.3",
     "@playwright/test": "1.57.0",
     "@types/node": "25.0.3",
+    "@types/screenshot-desktop": "^1.15.0",
     "create-vite": "8.2.0",
-    "electron": "39.2.7",
+    "electron": "^39.8.9",
     "electron-builder": "^26.8.1",
     "glob": "13.0.0",
-    "playwright": "^1.57.0"
+    "playwright": "^1.59.1"
   },
   "dependencies": {
-    "@app/main": "*"
+    "@app/main": "*",
+    "punycode": "^2.3.1",
+    "screenshot-desktop": "^1.15.1",
+    "sharp": "^0.33.5",
+    "tesseract.js": "^5.1.1"
   }
 }

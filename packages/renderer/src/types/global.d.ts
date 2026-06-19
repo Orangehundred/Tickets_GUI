@@ -6,7 +6,9 @@ declare global {
   interface Window {
     api: {
       createTicket: (ticketData: TicketData) => Promise<any>,
-      createPassword: (passwordData: PasswordData) => Promise<any>
+      createPassword: (passwordData: PasswordData) => Promise<any>,
+      extractPhoneNumber: () => Promise<string>,
+      resetPhoneRegion: () => Promise<boolean>;
     }
   }
 }
