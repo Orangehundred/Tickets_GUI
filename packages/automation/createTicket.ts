@@ -251,10 +251,10 @@ export async function createTicket(ticket: TicketData) {
   
   const resolvedMessage = await page.locator('.alert__text a.hyperlink[href^="/technology-requests/"]').textContent()
   const ticketHref = await page.locator('.alert__text .hyperlink').first().getAttribute('href');
-  const ticketLink = `https://sps.gofmx.com${ticketHref}`;
-
+  
   console.log(resolvedMessage?.trim());
-  console.log('Ticket link: ' + ticketLink)
+  const ticketNum = resolvedMessage?.replace(/\D/g, "")
+  console.log('Ticket link: ' + 'https://sps.gofmx.com/technology-requests/' + ticketNum);
 
   await page.waitForTimeout(6000);
   await browser.close();
