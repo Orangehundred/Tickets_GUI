@@ -125,7 +125,9 @@ export async function extractPhoneNumber(): Promise<string> {
     })
     .resize({ width: config.width * 3 })
     .grayscale()
-    .threshold(150)
+    .normalise()           // Auto-stretches contrast across full range
+    .linear(2.0, -50)      // Multiplies brightness by 2.0, subtracts 50 (darkens background)
+    .threshold(100)        // Lower threshold since we already boosted contrast
     .toBuffer();
 
   const worker = await createWorker("eng");
