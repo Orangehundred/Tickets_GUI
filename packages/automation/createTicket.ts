@@ -88,21 +88,27 @@ export async function createTicket(ticket: TicketData) {
   if (!isLoggedIn) {
     console.log("Session invalid or expired. Logging in...")
 
-    await page.locator('.button2.button2--secondary.button2--block.login-page__login-button').click()
+    const saveSession = async () => {
+      await context.storageState({ path: AUTH_PATH });
+      console.log("Authentication state saved.");
+    };
 
-  // Wait to see if google button auto-logs us in
-  const saveSession = async () => {
-    await context.storageState({ path: AUTH_PATH });
-    console.log("Authentication state saved.");
-  };
-  
-  async function isVisible(selector: string): Promise<boolean> {
-    return page.locator(selector).waitFor({ state: "visible", timeout: 10000 }).then(() => true).catch(() => false);
-  }
+    async function isVisible(selector: string): Promise<boolean> {
+      return page.locator(selector).waitFor({ state: "visible", timeout: 10000 }).then(() => true).catch(() => false);
+    }
 
-  if (await isVisible(".user-avatar")) {
-    console.log("Logged in automatically with Google button, saving session...");
-    await saveSession();
+    // Click "Sign in with Google" button
+    const loginBtn = page.locator('.button2.button2--secondary.button2--block.login-page__login-button');
+    if (await isVisible('.button2.button2--secondary.button2--block.login-page__login-button')) {
+      await loginBtn.click();
+    }
+
+    // Wait for navigation to settle before checking which screen we're on
+    await page.waitForLoadState('domcontentloaded');
+
+    if (await isVisible(".user-avatar")) {
+      console.log("Logged in automatically with Google button, saving session...");
+      await saveSession();
 
   } else if (await isVisible("text=Choose an account")) {
     console.log("Found account selection screen, trying to click on email...");
@@ -127,7 +133,7 @@ export async function createTicket(ticket: TicketData) {
     // 3. After successful login, save the storage state to a file
     await context.storageState({ path: AUTH_PATH })
     console.log("Authentication state saved.")
-    console.log(fs.readFileSync(AUTH_PATH, "utf-8"))
+    //console.log(fs.readFileSync(AUTH_PATH, "utf-8"))
   } else {
     console.log("Using existing authenticated session.")
   }
