@@ -113,16 +113,20 @@ export async function createTicket(ticket: TicketData) {
   } else if (await isVisible("text=Choose an account")) {
     console.log("Found account selection screen, trying to click on email...");
     await page.getByRole("link", { name: username as string }).click();
-    await page.getByRole("textbox", { name: "Enter your password" }).fill(password as string);
-    await page.getByRole("button", { name: "Next" }).click();
     await saveSession();
 
   } else {
-    console.log("Auto-login failed, proceeding with manual login...");
-    await page.getByRole("textbox", { name: "Email or phone" }).fill(username as string);
-    await page.getByRole("button", { name: "Next" }).click();
-    await page.getByRole("textbox", { name: "Enter your password" }).fill(password as string);
-    await page.getByRole("button", { name: "Next" }).click();
+    console.log("Existing account login failed, proceeding with new account login...");
+    if (await isVisible("text=to continue to ")) {
+      //Google login
+      await page.getByRole("textbox", { name: "Email or phone" }).fill(username as string);
+      await page.getByRole("button", { name: "Next" }).click();
+      //Microsoft login
+      await isVisible("text=Enter password")
+      await page.locator('input[placeholder="Password"]').fill(password as string);
+      await page.getByRole("button", { name: "Sign in" }).click();
+      await page.getByRole("button", { name: "Yes" }).click();
+    }
   }
 
     // Wait for successful login indicator
@@ -213,25 +217,26 @@ export async function createTicket(ticket: TicketData) {
   // ASSIGNED_TO: Wait until at least one item is present under Assigned to dropdown
   await page.locator('.js-work-request-new-assignment-editor .selectize-input div.item').first().waitFor({ state: 'visible', timeout: 180000 });
 
-  const selectize2 = page.locator('.js-work-request-new-assignment-editor .selectize-input')
-
-  // Remove existing selections
-  const items = selectize2.locator('div.item');
-
-  while (await items.count() > 0) {
-    await items.first().locator('a.remove').click(); // click the × button
-  }
-
   // Open dropdown and select the assignee
   if (ticket.assigned_to != "") {
+      const selectize2 = page.locator('.js-work-request-new-assignment-editor .selectize-input')
+
+    // Remove existing selections
+    const items = selectize2.locator('div.item');
+
+    while (await items.count() > 0) {
+      await items.first().locator('a.remove').click(); // click the × button
+    }
+
     await page.locator('.js-work-request-new-assignment-editor .selectize-dropdown-content').getByText(ticket.assigned_to).click();
   } else {
-    console.log("No Assignee - waiting for manual selection...");
+    console.log("No Assignee - waiting for selection...");
+      await page.waitForTimeout(5000);
     await page.locator('.js-work-request-new-assignment-editor .selectize-input div.item').first().waitFor({ state: 'visible', timeout: 180000 });
   }
   console.log("Assignee selected, continuing...");
 
-  await page.waitForTimeout(2000);
+  await page.waitForTimeout(1000);
 
   const currentUrl = page.url();
 
@@ -246,21 +251,28 @@ export async function createTicket(ticket: TicketData) {
     await page.waitForTimeout(3000);
   }
 
-  // Wait for the alert to appear after submission before clicking
-  await page.locator('.alert__text a.hyperlink[href^="/technology-requests/"]').waitFor({ state: 'visible', timeout: 10000 });
-  await page.locator('.alert__text a.hyperlink[href^="/technology-requests/"]').first().click();
+  // If auto-resolve ticket, then RESOLVE the ticket automatically.
+  if (ticket.auto_resolve == true) { 
+    // Wait for the alert to appear after submission before clicking
+    await page.locator('.alert__text a.hyperlink[href^="/technology-requests/"]').waitFor({ state: 'visible', timeout: 10000 });
+    await page.locator('.alert__text a.hyperlink[href^="/technology-requests/"]').first().click();
 
-  await page.getByRole('link', { name: ' Resolve' }).click();
-  await page.getByRole('textbox', { name: 'Resolution' }).fill(ticket.descriptionTemplate);
+    await page.getByRole('link', { name: ' Resolve' }).click();
+    // Footer message to be added to resolution messages
+    let publicResponse = `\n \n **⚠️ FMX RESPONSE NOTICE
 
-  await page.getByRole('button', { name: 'Resolve' }).click();
-  
-  const resolvedMessage = await page.locator('.alert__text a.hyperlink[href^="/technology-requests/"]').textContent()
-  
-  console.log(resolvedMessage?.trim());
-  const ticketNum = resolvedMessage?.replace(/\D/g, "")
+    `;
+
+    await page.getByRole('textbox', { name: 'Resolution' }).fill(ticket.descriptionTemplate + publicResponse);
+    await page.getByRole('button', { name: 'Resolve' }).click();
+  }
+
+  const newTicket = await page.locator('.alert__text a.hyperlink[href^="/technology-requests/"]').textContent()
+  console.log(newTicket?.trim());
+  const ticketNum = newTicket?.replace(/\D/g, "")
   console.log('Ticket link: ' + 'https://sps.gofmx.com/technology-requests/' + ticketNum);
 
   await page.waitForTimeout(6000);
   await browser.close();
+  
 }

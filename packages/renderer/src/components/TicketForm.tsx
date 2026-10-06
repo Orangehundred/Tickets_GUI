@@ -11,65 +11,82 @@ const TYPE_OPTIONS = [
     request_type: "Other",
     request_title: "OTHER",
     descriptionTemplate: "",
-    assigned_to: ""
+    assigned_to: "",
+    auto_resolve: false
   },
   {
     request_type: "Issue - User Accounts",
     request_title: "Staff Password Reset",
     descriptionTemplate:
-      "User requested a password reset. I reset the password and confirmed the user was able to sign in successfully.",
-    assigned_to: assigneeList[0]
+      "User requested a password reset. I reset the password and confirmed the user was able to sign in successfully. ",
+    assigned_to: assigneeList[0],
+    auto_resolve: true
   },
   {
     request_type: "Issue - User Accounts",
     request_title: "Password Expired",
     descriptionTemplate:
       "User’s password had expired. Password was reset and access was restored.",
-    assigned_to: assigneeList[0]
+    assigned_to: assigneeList[0],
+    auto_resolve: true
   },
   {
     request_type: "Issue - User Accounts",
     request_title: "Student Password Reset",
     descriptionTemplate:
       "User requested a password reset for a student. I verified their ID, and their password was reset.",
-    assigned_to: assigneeList[0]
+    assigned_to: assigneeList[0],
+    auto_resolve: true
   },
   {
     request_type: "Issue - User Accounts",
     request_title: "Parent HAC Password Reset",
     descriptionTemplate:
       "Parent called and requested a password reset. I reset their password after confirming their identity with their student's ID number. I then confirmed the user was able to sign in successfully.",
-    assigned_to: assigneeList[0]
+    assigned_to: assigneeList[0],
+    auto_resolve: true
   },
   {
     request_type: "Issue - Staff Device",
     request_title: "Bitlocker Recovery",
     descriptionTemplate:
-      "Provided BitLocker recovery key and confirmed the device was unlocked.",
-    assigned_to: assigneeList[0]
+      "User's device was stuck in recovery mode. I provided a BitLocker recovery key and confirmed with the user that the device was unlocked.",
+    assigned_to: assigneeList[0],
+    auto_resolve: false
   },
   {
     request_type: "Issue - Audio Visual Equipment",
     request_title: "AV Board Room Check",
     descriptionTemplate:
-      "Performed AV board room check. All equipment tested and functioning properly.",
+      "Performed AV board room check for both meeting rooms. All equipment tested and functioning properly.",
     assigned_to: assigneeList[0],
-    phoneNumber: phoneList[0],
     building: buildingList[0],
+    phoneNumber: phoneList[0],
+    auto_resolve: true
   },
   {
     request_type: "Issue - Audio Visual Equipment",
     request_title: "Cleartouch board connectivity Issues",
     descriptionTemplate:
-      "Cleartouch board in the room is experiencing issues with connectivity.",
-    assigned_to: ""
+      "Cleartouch board in the room is experiencing issues with connectivity. The staff member requested that a tech come out and take a look.",
+    assigned_to: "",
+    auto_resolve: false
   },
   {
     request_type: "Issue - Staff Device",
     request_title: "Remoted into device to diagnose problem",
     descriptionTemplate:
-      "I remoted into the staff's device to help troubleshoot. After making the proper fixes or workaround, the user is able to work again normally.",
-    assigned_to: assigneeList[0]
+      "I remoted into the staff's device to help troubleshoot. After making the proper corrections and explaining, the user is able to work again normally.",
+    assigned_to: assigneeList[0],
+    auto_resolve: true
+  },
+  {
+    request_type: "Security Escalation",
+    request_title: "Compromised Account",
+    descriptionTemplate:
+      "User clicked on spam emails recently and was compromised. I reset their password and secured their account.",
+    assigned_to: "",
+    auto_resolve: true
   }
 ]
 
@@ -86,7 +103,8 @@ export default function TicketForm({ appendLog }: AppendLogProps) {
     descriptionTemplate: "",
     assigned_to: "",
     phoneNumber: "",
-    building: ""
+    building: "",
+    auto_resolve: false
   })
 
   //Provide ticket type dropdown options and autofill Fields on ticket type change

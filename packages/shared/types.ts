@@ -6,6 +6,7 @@ export interface TicketData {
   assigned_to: string
   phoneNumber?: string
   building?: string // ← the ? makes it optional
+  auto_resolve: boolean
 }
 
 export interface PasswordData {
