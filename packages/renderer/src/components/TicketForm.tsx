@@ -107,7 +107,7 @@ export default function TicketForm({ appendLog }: AppendLogProps) {
     auto_resolve: false
   })
 
-  //Provide ticket type dropdown options and autofill Fields on ticket type change
+  //Provide ticket type dropdown options and autofill fields with data from the respective ticket template found above. 
   const handleTypeChange = (value: string) => {
     console.log("Ticket type changed to:", value)
     appendLog(`Ticket type changed to: "${value}"`)
@@ -117,17 +117,16 @@ export default function TicketForm({ appendLog }: AppendLogProps) {
   )
 
   if (!selected) return
-
+    //Pulls values from ticket templates found above and makes sure packages\automation\createTicket.ts uses them.
     setForm(prev => ({
       ...prev,
-
       request_type: selected.request_type,
       request_title: selected.request_title,
       descriptionTemplate: selected.descriptionTemplate,
       assigned_to: selected.assigned_to,
       phoneNumber: selected.phoneNumber ?? "",
-      building: selected.building ?? "" //Fallback to empty string if undefined
-
+      building: selected.building ?? "", //Fallback to empty string if undefined
+      auto_resolve: selected.auto_resolve
     }))
   }
 
