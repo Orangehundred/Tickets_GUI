@@ -104,7 +104,8 @@ export default function TicketForm({ appendLog }: AppendLogProps) {
     assigned_to: "",
     phoneNumber: "",
     building: "",
-    auto_resolve: false
+    auto_resolve: false,
+    theme: localStorage.getItem("ui-theme") ?? "dark"  // reads saved setting as string
   })
 
   //Provide ticket type dropdown options and autofill fields with data from the respective ticket template found above. 

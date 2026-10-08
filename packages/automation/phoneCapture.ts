@@ -1,7 +1,11 @@
 import { BrowserWindow, screen, ipcMain } from "electron";
 import * as fs from "fs";
 import * as path from "path";
-import screenshot from "screenshot-desktop";
+
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const screenshot = require("../../packages/automation/screenshot-desktop/lib/win32/index.cjs");
+
 import { createWorker } from "tesseract.js";
 import sharp from "sharp"; // npm install sharp - used to crop the screenshot
 

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import TicketForm from "./components/TicketForm"
 import PasswordInfo from "./components/PasswordInfo"
+import Settings from "./components/Settings"
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(1)
@@ -40,7 +41,7 @@ const clearLog = async () => {
       <div className="center">
         {activeTab === 1 && <TicketForm appendLog={appendLog} />}
         {activeTab === 2 && <PasswordInfo appendLog={appendLog} />}
-        {activeTab === 3 && <label>Settings</label>}
+        {activeTab === 3 && <Settings appendLog={appendLog} />}
       </div>
       <div className="right">
           {/* Log */}
@@ -61,6 +62,4 @@ const clearLog = async () => {
 }
 
 
-/* Ideas: Password Generator that runs playwright script to change password in Active Directory, 
-checks for phone number automatically based on whats on the right monitor, Caller ID: 
-Settings: Dark mode/light mode that changes UI look and web page UI look*/
+// Ideas: Password Generator that runs playwright script to change password in Active Directory

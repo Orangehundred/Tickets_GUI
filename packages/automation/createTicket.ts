@@ -16,7 +16,6 @@ const password = process.env.FMX_PASSWORD
 if (!username || !password) {
   throw new Error("Missing USERNAME or PASSWORD in creds.env")
 }
-//
 
 export async function createTicket(ticket: TicketData) {
   const browser = await firefox.launch({ headless: false })
@@ -41,13 +40,15 @@ export async function createTicket(ticket: TicketData) {
         color: #e0e0e0 !important;
         border-color: #666f77 !important;
       }
-      input, textarea, select {
+        input, textarea, select {
         background-color: #2a2a2a !important;
         color: #e0e0e0 !important;
+      }    
+      .page-side-nav__link.current {
+        background-color: #4f46e5 !important;
       }
-
       button {
-        background-color: #0394f7 !important;
+        background-color: #4f46e5 !important;
         color: #2a2a2a !important;
       }
       .selectize-input.input-active,
@@ -55,26 +56,47 @@ export async function createTicket(ticket: TicketData) {
         background-color: #000000 !important;
         color: #e0e0e0 !important;
       }   
-
       .selectize-dropdown .option.active {
-        background-color: #0394f7 !important;
+        background-color: #4f46e5 !important;
         color: #2a2a2a !important;
       }
-    `
-  // Injects dark mode on every new page/navigation automatically
-  await context.addInitScript((css) => {
-    const applyDarkMode = () => {
-      const style = document.createElement('style');
-      style.textContent = css;
-      document.head.appendChild(style);
-    };
-    // Apply immediately and on any DOM changes
-    if (document.head) {
-      applyDarkMode();
-    } else {
-      document.addEventListener('DOMContentLoaded', applyDarkMode);
-    }
-  }, darkModeCSS);
+    `;
+
+    const lightModeCSS = `
+      .page-side-nav__link.current {
+        background-color: #9d94ec !important;
+      }
+      button {
+        background-color: #4f46e5 !important;
+        color: #ffffff !important;
+      }
+      .selectize-input.input-active,
+      .selectize-input.input-active:hover {
+        background-color: #f0f0f0 !important;
+        color: #1a1a1a !important;
+      }
+      .selectize-dropdown .option.active {
+        background-color: #4f46e5 !important;
+        color: #ffffff !important;
+      }
+    `;
+    
+    // Pick which CSS to inject based on the theme setting passed in from the form
+    const themeCSS = ticket.theme === "dark" ? darkModeCSS : lightModeCSS;
+
+    // Inject on every page navigation automatically
+    await context.addInitScript((css) => {
+      const applyTheme = () => {
+        const style = document.createElement('style');
+        style.textContent = css;
+        document.head.appendChild(style);
+      };
+      if (document.head) {
+        applyTheme();
+      } else {
+        document.addEventListener('DOMContentLoaded', applyTheme);
+      }
+    }, themeCSS);
 
   const page = await context.newPage()
 
@@ -260,7 +282,12 @@ export async function createTicket(ticket: TicketData) {
     await page.getByRole('link', { name: ' Resolve' }).click();
     // Footer message to be added to resolution messages
     let publicResponse = `\n \n **⚠️ FMX RESPONSE NOTICE
-
+    \n
+    Please note:
+    \n
+    FMX emails may state, “You can respond to this request by replying to this email.” However, email replies are not currently updating FMX tickets.
+    \n
+    To update your ticket or share additional information with our team, please log in to FMX directly or call the IT Help Desk at 417-523-4357 with your ticket number and we will be happy to help.
     `;
 
     await page.getByRole('textbox', { name: 'Resolution' }).fill(ticket.descriptionTemplate + publicResponse);

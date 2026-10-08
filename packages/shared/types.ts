@@ -7,6 +7,7 @@ export interface TicketData {
   phoneNumber?: string
   building?: string // ← the ? makes it optional
   auto_resolve: boolean
+  theme: string
 }
 
 export interface PasswordData {
