@@ -1,0 +1,219 @@
+:root {
+  --system-ui: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: light;
+  background-color: #f0f0f0;
+}
+
+
+body {
+  background: #f0f0f0;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+main {
+  min-height: 100vh;
+  display: grid;
+  grid-column: auto;
+  grid-template-columns: auto 1fr 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "hd hd hd"
+    "lt cn rt"
+    "ft ft ft";
+}
+
+.ribbon {
+  grid-area: hd;
+  padding: 20px 20px;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  color: white;
+  font-family: var(--system-ui);
+  font-size: 20px;
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.left {
+  height: auto;
+  grid-area: lt;
+  align-items: center;
+  font-family: var(--system-ui);
+  background: linear-gradient(to bottom, #ffffff, #e8e8f0);
+  border: 1px solid #bbb;
+  box-shadow: 6px 10px 40px 2px rgba(0,0,0,0.1);
+  padding: clamp(0.5rem, 10vw, 1.5rem);
+  margin-top: clamp(0.5rem, 5vw, 1rem);
+  margin-bottom: clamp(1rem, 10vw, 2rem);
+}
+
+.center {
+  height: auto;
+  grid-area: cn;
+  align-items: center;
+  font-family: var(--system-ui);
+  background: linear-gradient(to bottom, #ffffff, #e8e8f0);
+  border: 1px solid #bbb;
+  box-shadow: 6px 10px 40px 2px rgba(0,0,0,0.1);
+  padding: clamp(1rem, 10vw, 2rem);
+  margin-top: clamp(0.5rem, 5vw, 1rem);
+  margin-left: clamp(1rem, 10vw, 2rem);
+  margin-bottom: clamp(1rem, 10vw, 2rem);
+}
+
+label {
+  font-style: var(--system-ui);
+  font-size: 18px;
+  font-weight: 600;
+  padding: 10px;
+  color: #1a1a1a;
+}
+
+nav button {
+  background: #4f46e5;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  cursor: pointer;
+  height: auto;
+  width: 60px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+nav button:hover {
+  background: linear-gradient(to bottom, #7aafff, #4e95ff);
+}
+
+.box {
+  display: block;
+  min-height: 3vh;
+  min-width: 10vw;
+  padding: 5px;
+  padding-left: 10px;
+  max-width: 100%;
+  max-height: 50%;
+}
+
+.box::placeholder,
+textarea::placeholder {
+  color: #888;
+}
+
+.box:disabled,
+textarea.box:disabled {
+  color: #a0a0a0;
+  cursor: not-allowed;
+}
+
+.box:enabled,
+textarea.box:enabled {
+  color: #1a1a1a;
+  cursor: auto;
+}
+
+.phone-row {
+  display: flex;
+  gap: 10px;
+}
+
+select {
+  font-size: 16px;
+  margin-top: 8px;
+  margin-bottom: 5px;
+  margin-left: -10px;
+  padding: 5px;
+  font-family: var(--system-ui);
+  background: #ffffff;
+  color: #1a1a1a;
+  border: 1px solid #bbb;
+}
+
+textarea {
+  height: 15vh;
+}
+
+input,
+textarea {
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  font-size: 16px;
+  margin-bottom: 10px;
+  field-sizing: content;
+  inline-size: 80%;
+  border-radius: 3px;
+  font-family: var(--system-ui);
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+input:focus,
+textarea:focus {
+  outline: 0.2rem solid #4f46e5;
+  box-shadow: 6px 10px 40px 2px rgba(0,0,0,0.1);
+}
+
+.submit-btn {
+  background: #4f46e5;
+  color: white;
+  cursor: pointer;
+  padding: 10px 16px;
+  font-weight: 550;
+  font-size: 15px;
+}
+
+.submit-btn:disabled {
+  background: #c0c0d0;
+  color: #888;
+  cursor: not-allowed;
+}
+
+button:hover {
+  background: linear-gradient(to bottom, #7aafff, #4e95ff);
+}
+
+.error-text {
+  color: red;
+  padding-left: 10px;
+}
+
+.right {
+  height: auto;
+  grid-area: rt;
+  align-items: center;
+  font-family: var(--system-ui);
+  background: linear-gradient(to bottom, #ffffff, #e8e8f0);
+  border: 1px solid #bbb;
+  box-shadow: 6px 10px 40px 2px rgba(0,0,0,0.1);
+  padding: clamp(1rem, 10vw, 2rem);
+  margin-top: clamp(0.5rem, 5vw, 1rem);
+  margin-left: clamp(1rem, 10vw, 2rem);
+  margin-bottom: clamp(1rem, 10vw, 2rem);
+}
+
+.log-box {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.85rem;
+  color: #1a1a1a;
+  background-color: #f5f5f5;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  height: 75%;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.footer {
+  font-family: var(--system-ui);
+  text-align: center;
+  color: rgb(80, 80, 80);
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  font-size: 15px;
+  grid-area: ft;
+}

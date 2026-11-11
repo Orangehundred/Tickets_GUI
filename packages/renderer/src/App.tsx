@@ -2,10 +2,12 @@ import { useState } from "react"
 import TicketForm from "./components/TicketForm"
 import PasswordInfo from "./components/PasswordInfo"
 import Settings from "./components/Settings"
+import { useTheme } from "./useTheme"
 
 export default function App() {
   const [activeTab, setActiveTab] = useState(1)
   const [logs, setLogs] = useState<string[]>([])
+  const { theme, setTheme } = useTheme()
 
   //Function for adding comments to the log
   function appendLog(message: string) {
@@ -41,7 +43,7 @@ const clearLog = async () => {
       <div className="center">
         {activeTab === 1 && <TicketForm appendLog={appendLog} />}
         {activeTab === 2 && <PasswordInfo appendLog={appendLog} />}
-        {activeTab === 3 && <Settings appendLog={appendLog} />}
+        {activeTab === 3 && <Settings appendLog={appendLog} setTheme={setTheme} theme={theme} />}
       </div>
       <div className="right">
           {/* Log */}

@@ -1,14 +1,13 @@
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 
-type AppendLogProps = {
+type SettingsProps = {
   appendLog: (message: string) => void
+  theme: string
+  setTheme: (theme: string) => void
 }
 
-export default function Settings({ appendLog }: AppendLogProps) {
-  // Read saved theme from localStorage, default to "dark" if nothing saved
-  const [theme, setTheme] = useState<"dark" | "light">(
-    () => (localStorage.getItem("ui-theme") as "dark" | "light") ?? "dark"
-  )
+export default function Settings({ appendLog, theme, setTheme }: SettingsProps) {
+
 
   // Whenever theme changes, swap the stylesheet and save the choice
   useEffect(() => {
@@ -28,20 +27,22 @@ export default function Settings({ appendLog }: AppendLogProps) {
   return (
     <div>
       <label>Settings</label>
-
       <div style={{ marginTop: "20px" }}>
         <label style={{ fontSize: "16px" }}>UI Theme</label>
         <br />
         <select
-            value={theme}
-            onChange={e => setTheme(e.target.value as "dark" | "light")}
-            >
-            <option value="dark">Dark (Default)</option>
-            <option value="light">Light</option>
+          value={theme}
+          onChange={e => {
+            setTheme(e.target.value)
+            appendLog(`UI theme changed to: ${e.target.value} mode`)
+          }}
+          style={{ marginTop: "8px" }}
+        >
+          <option value="dark">Dark (Default)</option>
+          <option value="light">Light</option>
         </select>
       </div>
 
-      {/* Reset phone capture region config */}
       <div style={{ marginTop: "30px" }}>
         <label style={{ fontSize: "16px" }}>Phone Capture Region</label>
         <br />
@@ -49,11 +50,15 @@ export default function Settings({ appendLog }: AppendLogProps) {
           className="submit-btn"
           style={{ marginTop: "8px" }}
           onClick={async () => {
+            if (!window.api?.resetPhoneRegion) {
+              appendLog("Reset phone region API not available")
+              return
+            }
             await window.api.resetPhoneRegion()
-            appendLog("Phone capture region reset. You will be prompted to re-select it on next use.")
+            appendLog("Phone capture region reset. You will be prompted to re-select on next use.")
           }}
         >
-          Reset Capture Region
+          Reset
         </button>
       </div>
     </div>
