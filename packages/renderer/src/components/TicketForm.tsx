@@ -87,6 +87,14 @@ const TYPE_OPTIONS = [
       "User clicked on spam emails recently and was compromised. I reset their password and secured their account.",
     assigned_to: "",
     auto_resolve: true
+  },
+  {
+    request_type: "Issue - User Accounts",
+    request_title: "Updated Staff Microsoft Authentication Method",
+    descriptionTemplate:
+      "User was unable to verify with their current authentication method. So I updated their account to use phone SMS authentication. User was able to verify successfully afterwards.",
+    assigned_to: assigneeList[0],
+    auto_resolve: true
   }
 ]
 

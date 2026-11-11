@@ -135,6 +135,13 @@ export async function createTicket(ticket: TicketData) {
   } else if (await isVisible("text=Choose an account")) {
     console.log("Found account selection screen, trying to click on email...");
     await page.getByRole("link", { name: username as string }).click();
+
+    //Another additional password prompt for Microsoft
+    if (await isVisible("text=Enter password")) {
+      await page.locator('input[placeholder="Password"]').fill(password as string);
+      await page.getByRole("button", { name: "Sign in" }).click();
+      //await page.getByRole("button", { name: "Yes" }).click();
+    }
     await saveSession();
 
   } else {

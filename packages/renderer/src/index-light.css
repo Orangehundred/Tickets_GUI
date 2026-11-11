@@ -13,22 +13,23 @@ body {
   color: #1a1a1a;
 }
 
-main {
-  min-height: 100vh;
-  display: grid;
-  grid-column: auto;
-  grid-template-columns: auto 1fr 1fr;
-  grid-template-rows: auto 1fr auto;
-  grid-template-areas:
-    "hd hd hd"
-    "lt cn rt"
-    "ft ft ft";
-}
+  main {
+    height: 100vh;               
+    overflow: hidden;  /*  never show a scrollbar */
+    display: grid;
+    grid-column: auto;
+    grid-template-columns: auto 1fr 1fr;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "hd hd hd" 
+      "lt cn rt" 
+      "ft ft ft";
+  }
 
 .ribbon {
   grid-area: hd;
   padding: 20px 20px;
-  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  background: linear-gradient(90deg, #7e56f7, #9f9af1);
   color: white;
   font-family: var(--system-ui);
   font-size: 20px;
@@ -41,7 +42,7 @@ main {
   grid-area: lt;
   align-items: center;
   font-family: var(--system-ui);
-  background: linear-gradient(to bottom, #ffffff, #e8e8f0);
+  background: linear-gradient(to bottom, #ffffff, #c9c3ff);
   border: 1px solid #bbb;
   box-shadow: 6px 10px 40px 2px rgba(0,0,0,0.1);
   padding: clamp(0.5rem, 10vw, 1.5rem);
@@ -54,7 +55,7 @@ main {
   grid-area: cn;
   align-items: center;
   font-family: var(--system-ui);
-  background: linear-gradient(to bottom, #ffffff, #e8e8f0);
+  background: linear-gradient(to bottom, #ffffff, #c9c3ff);
   border: 1px solid #bbb;
   box-shadow: 6px 10px 40px 2px rgba(0,0,0,0.1);
   padding: clamp(1rem, 10vw, 2rem);
@@ -72,7 +73,7 @@ label {
 }
 
 nav button {
-  background: #4f46e5;
+  background: linear-gradient(to bottom, #7e56f7, #9f9af1);
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -82,10 +83,11 @@ nav button {
   width: 60px;
   margin-bottom: 20px;
   color: white;
+  border-color: #e2e0fb;
 }
 
 nav button:hover {
-  background: linear-gradient(to bottom, #7aafff, #4e95ff);
+  background: #4f46e580;
 }
 
 .box {
@@ -130,6 +132,12 @@ select {
   background: #ffffff;
   color: #1a1a1a;
   border: 1px solid #bbb;
+  border-radius: 4px;
+}
+
+select:focus {
+  outline: 0.2rem solid #4f46e580;
+  box-shadow: 6px 10px 40px 2px rgba(0,0,0,0.1);
 }
 
 textarea {
@@ -152,27 +160,29 @@ textarea {
 
 input:focus,
 textarea:focus {
-  outline: 0.2rem solid #4f46e5;
+  outline: 0.2rem solid #4f46e580;
   box-shadow: 6px 10px 40px 2px rgba(0,0,0,0.1);
 }
 
 .submit-btn {
-  background: #4f46e5;
+  background: linear-gradient(to bottom, #7e56f7, #9f9af1);
   color: white;
   cursor: pointer;
   padding: 10px 16px;
   font-weight: 550;
   font-size: 15px;
+  border-color: #e2e0fb;
 }
 
 .submit-btn:disabled {
   background: #c0c0d0;
   color: #888;
   cursor: not-allowed;
+  border-color: #e5e5e5;
 }
 
 button:hover {
-  background: linear-gradient(to bottom, #7aafff, #4e95ff);
+  background: #4f46e580;
 }
 
 .error-text {
@@ -185,7 +195,7 @@ button:hover {
   grid-area: rt;
   align-items: center;
   font-family: var(--system-ui);
-  background: linear-gradient(to bottom, #ffffff, #e8e8f0);
+  background: linear-gradient(to bottom, #ffffff, #c9c3ff);
   border: 1px solid #bbb;
   box-shadow: 6px 10px 40px 2px rgba(0,0,0,0.1);
   padding: clamp(1rem, 10vw, 2rem);
@@ -195,9 +205,9 @@ button:hover {
 }
 
 .log-box {
-  font-family: "Courier New", Courier, monospace;
+  font-family: "Inter", monospace;
   font-size: 0.85rem;
-  color: #1a1a1a;
+  color: rgb(30, 30, 30);
   background-color: #f5f5f5;
   border: 1px solid #bbb;
   border-radius: 4px;
@@ -211,7 +221,7 @@ button:hover {
 .footer {
   font-family: var(--system-ui);
   text-align: center;
-  color: rgb(80, 80, 80);
+  color: rgb(55, 55, 55);
   padding: 10px 20px;
   margin-bottom: 10px;
   font-size: 15px;
