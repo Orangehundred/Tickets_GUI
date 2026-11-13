@@ -21,7 +21,6 @@ export default function Settings({ appendLog, theme, setTheme }: SettingsProps) 
 
     // Persist choice across sessions
     localStorage.setItem("ui-theme", theme)
-    appendLog(`UI theme changed to: ${theme} mode`)
   }, [theme])
 
   return (
